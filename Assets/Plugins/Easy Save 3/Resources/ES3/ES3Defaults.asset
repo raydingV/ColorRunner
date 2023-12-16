@@ -30,14 +30,14 @@ MonoBehaviour:
     serializationDepthLimit: 64
     assemblyNames:
     - Assembly-CSharp-firstpass
-    - Assembly-CSharp
     - Boxophobic.PolyverseSkies.Runtime
-    - Boxophobic.PolyverseSkies.Scripts
-    - Boxophobic.Utils.Scripts
     - Cinemachine
-    - Boxophobic.PolyverseSkies.Editor
+    - Assembly-CSharp
+    - Boxophobic.Utils.Scripts
+    - Boxophobic.PolyverseSkies.Scripts
     - Boxophobic.Utils.Editor
     - PPv2URPConverters
+    - Boxophobic.PolyverseSkies.Editor
     showAdvancedSettings: 0
   addMgrToSceneAutomatically: 0
   autoUpdateReferences: 1
