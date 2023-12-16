@@ -36,14 +36,14 @@ namespace Controllers
         {
             PlayerSignals.Instance.onPlayerRotate += OnPlayerRotate;
         }
-
+        
         private void UnSubscribeEvents()
         {
             PlayerSignals.Instance.onPlayerRotate -= OnPlayerRotate;
         }
 
         #endregion
-
+        
         public void SetMovementData(PlayerMovementData movementData)
         {
             _playerMovementData = movementData;
@@ -56,7 +56,7 @@ namespace Controllers
                 if (_runnerMovement)
                 {
                     RunnerMove();
-
+                    
                     if (_isDragged)
                     {
                         RunnerRotate();
@@ -100,7 +100,7 @@ namespace Controllers
             _isDragged = isDragged;
             _isReleased = isReleased;
         }
-
+        
         private void RunnerMove()
         {
             rigidBody.velocity = new Vector3(_horizontalInput * _playerMovementData.RunnerSidewaySpeed, rigidBody.velocity.y,
@@ -111,7 +111,7 @@ namespace Controllers
         private void Clamp()
         {
             var pos = transform.position;
-            pos.x = Mathf.Clamp(transform.position.x, _playerMovementData.ClampValues.x, _playerMovementData.ClampValues.y);
+            pos.x =  Mathf.Clamp(transform.position.x, _playerMovementData.ClampValues.x, _playerMovementData.ClampValues.y);
             transform.position = pos;
         }
 
@@ -119,7 +119,7 @@ namespace Controllers
         {
             Vector3 direction = Vector3.forward + Vector3.right * Mathf.Clamp(_horizontalInput,
                 -_playerMovementData.RunnerMaxRotateAngle, _playerMovementData.RunnerMaxRotateAngle);
-
+            
             transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.LookRotation(direction),
                 _playerMovementData.RunnerTurnSpeed);
         }
@@ -131,11 +131,9 @@ namespace Controllers
 
         private void RunnerRotateNormal()
         {
-            Vector3 direction = Vector3.forward;
-            transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.LookRotation(direction),
-                _playerMovementData.RunnerTurnSpeed);
+            transform.rotation = Quaternion.LookRotation(Vector3.forward);
         }
-
+        
         private void IdleMove()
         {
             rigidBody.velocity = new Vector3(_horizontalInput * _playerMovementData.IdleSpeed, rigidBody.velocity.y,
@@ -157,7 +155,7 @@ namespace Controllers
             rigidBody.velocity = Vector3.zero;
             rigidBody.angularVelocity = Vector3.zero;
         }
-
+        
         public void SetInputValues(InputParameters inputParams)
         {
             _horizontalInput = inputParams.ValueOfX;
