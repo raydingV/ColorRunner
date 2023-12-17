@@ -1,68 +1,151 @@
-﻿using System.Collections;
+﻿using System;
 using Controllers;
-using UnityEngine;
-using UnityObject;
+using Data.ValueObject;
 using Enums;
-using ValueObject;
+using TMPro;
+using UnityEditor;
+using UnityEngine;
 
 namespace Managers
 {
     public class BuildingManager : MonoBehaviour
     {
-        [Header("Building Datas")]
-        private EnvironmentData _environmentData;
-        public BuildingData _mainBuilding;
-        public BuildingData _SideBuilding;
-        public BuildType buildingType;
-        
-        [Space]
-        [Header("Main building Script References")]
-        [SerializeField] BuildingMeshController buildingMeshcontroller;
-        [SerializeField] BuildingPhysicController buildingPhysiccontroller;
-        [SerializeField] BuildingScoreController buildingScoreController;
+        #region Variables
 
-        private void Awake()
+        #region Public
+
+        public BuildingData BuildingData;
+        
+        #endregion
+
+        #region Serialized
+
+        [SerializeField] private GameObject mainBuilding;
+        [SerializeField] private TextMeshPro mainText;
+        [SerializeField] private BuildingMeshController mainMesh;
+        
+        [SerializeField] private GameObject sideBuilding;
+        [SerializeField] private TextMeshPro sideText;
+        [SerializeField] private BuildingMeshController sideMesh;
+        
+        #endregion
+
+        #region Private
+        
+        private string _mainBuildingName;
+        private BuildingComplateState _mainBuildingComplateState;
+        private int _mainPrice;
+        private int _mainPayedAmount;
+
+        private string _sideBuildingName;
+        private BuildingComplateState _sideBuildingComplateState;
+        private int _sidePrice;
+        private int _sidePayedAmount;
+        
+        #endregion
+
+        #endregion
+
+        #region EventSubscription
+
+        private void OnEnable()
         {
-            GetEnvironmentData((int)buildingType);
-            SetBuildings();
-            SendDataToController();
+            SubscribeEvents();
         }
 
-        private void GetEnvironmentData(int building) => _environmentData = Resources.Load<CD_EnvironmentData>("Data/CD_EnvironmentData").EnvironmentData[building];
-
-        private void CheckEnvironmentData()
+        private void SubscribeEvents()
         {
-            switch (_mainBuilding.ComplateState)
+            
+        }
+
+        private void UnSubscribeEvents()
+        {
+            
+        }
+
+        private void OnDisable()
+        {
+            UnSubscribeEvents();
+        }
+
+        #endregion
+
+        private void Start()
+        {
+            SetDatas(BuildingData);
+            CheckDatas();
+        }
+        
+        public void SetDatas(BuildingData buildingData)
+        {
+            _mainBuildingName = buildingData.mainBuildingData.BuildingName;
+            _mainBuildingComplateState = buildingData.mainBuildingData.CompleteState;
+            _mainPrice = buildingData.mainBuildingData.Price;
+            _mainPayedAmount = buildingData.mainBuildingData.PayedAmount;
+
+            _sideBuildingName = buildingData.sideBuildindData.BuildingName;
+            _sideBuildingComplateState = buildingData.sideBuildindData.CompleteState;
+            _sidePrice = buildingData.sideBuildindData.Price;
+            _sidePayedAmount = buildingData.sideBuildindData.PayedAmount;
+        }
+
+        private void CheckDatas()
+        {
+            CheckComplateState(_mainBuildingComplateState,_mainPayedAmount,_mainPrice);
+            CheckComplateState(_sideBuildingComplateState,_sidePayedAmount,_sidePrice);
+        }
+        
+        public void OnPlayerEnter()
+        {
+            if (_mainBuildingComplateState == BuildingComplateState.Uncompleted && _sideBuildingComplateState == BuildingComplateState.Uncompleted)
             {
-                case BuildingComplateState.Uncompleted:
-                    buildingMeshcontroller = transform.GetChild(0).GetComponentInChildren<BuildingMeshController>();
-                    buildingPhysiccontroller = transform.GetChild(0).GetComponentInChildren<BuildingPhysicController>();
-                    buildingScoreController = transform.GetChild(0).GetComponentInChildren<BuildingScoreController>();
-                    _SideBuilding.BuildingUnlockState = BuildingUnlockState.Locked;
-                    break;
-                case BuildingComplateState.Completed:
-                    buildingMeshcontroller = transform.GetChild(1).GetComponentInChildren<BuildingMeshController>();
-                    buildingPhysiccontroller = transform.GetChild(1).GetComponentInChildren<BuildingPhysicController>();
-                    buildingScoreController = transform.GetChild(1).GetComponentInChildren<BuildingScoreController>();
-                    _SideBuilding.BuildingUnlockState = BuildingUnlockState.Unlocked;
-                    break;
+                CheckComplateState(_mainBuildingComplateState,_mainPayedAmount,_mainPrice);
+                _mainPayedAmount++;
+                SetText(mainText,_mainBuildingName,_mainPayedAmount,_mainPrice);
+                SetDataToBuildingData();
+                print(_sidePayedAmount);
+            }
+            
+            else if (_mainBuildingComplateState == BuildingComplateState.Completed && _sideBuildingComplateState == BuildingComplateState.Uncompleted)
+            {
+                print(_sidePayedAmount);
+                CheckComplateState(_sideBuildingComplateState,_sidePayedAmount,_sidePrice);
+                _sidePayedAmount++;
+                SetText(sideText,_sideBuildingName,_sidePayedAmount,_sidePrice);
+                SetDataToBuildingData();
             }
         }
-        
-        private void SendDataToController()
+
+        public void CheckComplateState(BuildingComplateState complateState, int payedAmount, int price)
         {
-            
+            if (complateState == _mainBuildingComplateState && payedAmount >= price)
+            {
+                _mainBuildingComplateState = BuildingComplateState.Completed;
+                mainBuilding.SetActive(false);
+                sideBuilding.SetActive(true);
+                mainMesh.ChangeBuildingSaturation(1.5f);
+            }
+
+            else if (complateState == _sideBuildingComplateState && payedAmount >= price)
+            {
+                _sideBuildingComplateState = BuildingComplateState.Completed;
+                sideBuilding.SetActive(false);
+                sideMesh.ChangeBuildingSaturation(1.5f);
+            }
         }
 
-        public void PlayerEnterTriggerArea()
+        public void SetText(TextMeshPro text,string BuildingName ,int PayedAmount, int price)
         {
-            
+            text.text = BuildingName + "\n" + PayedAmount + " / " + price;
         }
 
-        private void SetBuildings()
+        private void SetDataToBuildingData()
         {
-            _mainBuilding = _environmentData.Buildings[0];
-            _SideBuilding = _environmentData.Buildings[1];
+            BuildingData.mainBuildingData.PayedAmount = _mainPayedAmount;
+            BuildingData.mainBuildingData.CompleteState = _mainBuildingComplateState;
+            
+            BuildingData.sideBuildindData.PayedAmount = _sidePayedAmount;
+            BuildingData.sideBuildindData.CompleteState = _sideBuildingComplateState;
         }
     }
 }

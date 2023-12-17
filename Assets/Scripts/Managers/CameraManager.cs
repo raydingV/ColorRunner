@@ -33,11 +33,10 @@ namespace Managers
             RunnerCam = transform.GetChild(0).GetComponent<CinemachineVirtualCamera>();
             IdleCam = transform.GetChild(1).GetComponent<CinemachineVirtualCamera>();
             StateDrivenCameraAnimator = GetComponent<Animator>();
-            Player = GameObject.FindGameObjectWithTag("Player").transform;
             //_state = new CameraRunnerState();
             //_state.SetContext(this);
             //_state.ChangeStateCamera();
-            onTranslateCameraState(new CameraRunnerState());
+
         }
         
         #region Subscriptions
@@ -49,6 +48,8 @@ namespace Managers
 
         private void Subscribe()
         {
+            CoreGameSignals.Instance.onPlay += OnPlay;
+            
             PlayerSignals.Instance.onTranslateCameraState += onTranslateCameraState;
             PlayerSignals.Instance.onPlayerEnterDroneArea += OnPlayerEnterDroneArea;
             PlayerSignals.Instance.onPlayerExitDroneArea += OnDroneAnimationComplated;
@@ -57,6 +58,8 @@ namespace Managers
 
         private void UnSubscribe()
         {
+            CoreGameSignals.Instance.onPlay -= OnPlay;
+            
             PlayerSignals.Instance.onTranslateCameraState -= onTranslateCameraState;
             PlayerSignals.Instance.onPlayerEnterDroneArea -= OnPlayerEnterDroneArea;
             PlayerSignals.Instance.onPlayerExitDroneArea -= OnDroneAnimationComplated;
@@ -69,6 +72,11 @@ namespace Managers
         }
         #endregion
 
+        private void OnPlay()
+        {
+            Player = GameObject.FindGameObjectWithTag("Player").transform;
+            onTranslateCameraState(new CameraRunnerState());
+        }
         private void OnPlayerEnterDroneArea() => RunnerCam.Follow = null;
 
 

@@ -11,15 +11,13 @@ namespace Commands
     public class InitializeStackOnStartCommand
     {
         private List<Transform> _collectable;
-        private Transform _playerPossition;
         private Transform _parent;
         private GameObject stickmanPrefab;
         private ColorType _colorType;
 
-        public InitializeStackOnStartCommand(ref List<Transform> collectable, Transform playerPossition, Transform parent, GameObject stickmanPrefab, ColorType colorType)
+        public InitializeStackOnStartCommand(ref List<Transform> collectable, Transform parent, GameObject stickmanPrefab, ColorType colorType)
         {
             _collectable = collectable;
-            _playerPossition = playerPossition;
             _parent = parent;
             this.stickmanPrefab = stickmanPrefab;
             _colorType = colorType;
@@ -29,7 +27,7 @@ namespace Commands
         {
             if (_collectable.Count == 0)
             {
-                GameObject firstInitialStack = GameObject.Instantiate(stickmanPrefab, _playerPossition);
+                GameObject firstInitialStack = GameObject.Instantiate(stickmanPrefab);
                 _collectable.Add(firstInitialStack.transform);
                 firstInitialStack.transform.SetParent(_parent);
                 ScoreSignals.Instance.onCurrentLevelScoreUpdate?.Invoke(true);
@@ -37,7 +35,9 @@ namespace Commands
 
             for (int i = 0; i < size; i++)
             {
-                GameObject stackInstance = GameObject.Instantiate(stickmanPrefab, _collectable.Last().position,quaternion.identity);
+                Transform frontStickman = _collectable[_collectable.Count - 1].transform;
+                frontStickman.position = new Vector3(0,.3f,frontStickman.position.z - 1.5f);
+                GameObject stackInstance = GameObject.Instantiate(stickmanPrefab, frontStickman.position,quaternion.identity);
                 stackInstance.transform.SetParent(_parent);
                 _collectable.Add(stackInstance.transform);
                 ScoreSignals.Instance.onCurrentLevelScoreUpdate?.Invoke(true);

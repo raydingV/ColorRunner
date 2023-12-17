@@ -27,6 +27,6 @@ namespace Signals
         public Action<ColorType> onChangeMatarialColor;
         public Func<Transform> onGetFirstCollectable;
         public Action<bool, Transform> onAddAfterDroneAnimationDone;
-        
+        public Action onGetPlayer;
     }
 }

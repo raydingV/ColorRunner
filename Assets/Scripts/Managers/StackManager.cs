@@ -1,9 +1,11 @@
-﻿using Commands;
+﻿using System;
+using Commands;
 using DG.Tweening;
 using Enums;
 using Signals;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Sirenix.OdinInspector;
 using StateMachine;
 using UnityEngine;
 using UnityObject;
@@ -22,13 +24,12 @@ namespace Managers
 
         [SerializeField] private ColorType colorType;
         [SerializeField] private GameObject stickmanPrefab;
-
         #endregion Serialize Variables
 
         #region private Variables
 
         private LerpData _lerpData;
-        private Transform _playerPosition;
+        [ShowInInspector]private Transform _playerPosition;
         
         private AddCollectablesAfterDroneAnimationDoneCommand _addCollectablesAfterDroneAnimationDoneCommand;
         private AddStackCommand _addStackCommand;
@@ -39,6 +40,7 @@ namespace Managers
         private ShakeStackCommand _shakeStakeCommand;
         private StackEnterDroneAreaCommand _stackEnterDroneAreaCommand;
         private StackLerpMoveCommand _stackLerpMoveCommand;
+
         #endregion private Variables
 
         #endregion Self Variables
@@ -46,11 +48,16 @@ namespace Managers
         private void Awake()
         {
             Initialize();
+        }
+
+        private void Start()
+        {
             _initializeStackOnStartCommand.OnInitializeStackOnStart(5);//test pupose that bind next level signal
         }
 
         private void FixedUpdate()
         {
+            if(_playerPosition == null) return;
             _stackLerpMoveCommand.OnLerpStackMove();
         }
 
@@ -70,9 +77,11 @@ namespace Managers
 
         private void Subscribe()
         {
+            CoreGameSignals.Instance.onPlay += OnPlay;
+            
             StackSignals.Instance.onAddStack += _addStackCommand.OnAddStack;
             StackSignals.Instance.onRemoveFromStack += _removeStackCommand.OnRemoveFromStack;
-            StackSignals.Instance.onLerpStack += _stackLerpMoveCommand.OnLerpStackMove;
+            // StackSignals.Instance.onLerpStack += _stackLerpMoveCommand.OnLerpStackMove;
             StackSignals.Instance.onSetStackStartSize += _initializeStackOnStartCommand.OnInitializeStackOnStart;
             //StackSignals.Instance.onThrowStackInMiniGame += OnThrowStackInMiniGame;
             StackSignals.Instance.onStackEnterDroneArea += _stackEnterDroneAreaCommand.OnStackEnterDroneArea;
@@ -84,9 +93,11 @@ namespace Managers
 
         private void UnSubscribe()
         {
+            CoreGameSignals.Instance.onPlay -= OnPlay;
+            
             StackSignals.Instance.onAddStack -= _addStackCommand.OnAddStack;
             StackSignals.Instance.onRemoveFromStack -= _removeStackCommand.OnRemoveFromStack;
-            StackSignals.Instance.onLerpStack -= _stackLerpMoveCommand.OnLerpStackMove;
+            // StackSignals.Instance.onLerpStack -= _stackLerpMoveCommand.OnLerpStackMove;
             StackSignals.Instance.onSetStackStartSize -= _initializeStackOnStartCommand.OnInitializeStackOnStart;
             //StackSignals.Instance.onThrowStackInMiniGame -= OnThrowStackInMiniGame;
             StackSignals.Instance.onStackEnterDroneArea -= _stackEnterDroneAreaCommand.OnStackEnterDroneArea;
@@ -100,17 +111,21 @@ namespace Managers
 
         private void Initialize()
         {
-            _playerPosition = GameObject.FindGameObjectWithTag("Player").transform;
             _lerpData = GetLerpData();
             _shakeStakeCommand = new ShakeStackCommand(ref _collectableList, ref _lerpData);
             _addStackCommand = new AddStackCommand(ref _collectableList, ref _shakeStakeCommand, transform, this);
             _removeStackCommand = new RemoveStackCommand(ref _collectableList);
-            _stackLerpMoveCommand = new StackLerpMoveCommand(ref _collectableList, ref _lerpData, _playerPosition);
             _stackEnterDroneAreaCommand = new StackEnterDroneAreaCommand(ref _collectableList, ref _tempList);
             _addCollectablesAfterDroneAnimationDoneCommand = new AddCollectablesAfterDroneAnimationDoneCommand(ref _collectableList, ref _tempList);
             _changeAllCollectableColor = new ChangeAllCollectableColorTypeCommand();
-            _initializeStackOnStartCommand = new InitializeStackOnStartCommand(ref _collectableList, _playerPosition, transform, stickmanPrefab, colorType);
+            _initializeStackOnStartCommand = new InitializeStackOnStartCommand(ref _collectableList, transform, stickmanPrefab, colorType);
             _getFirstCollectableCommand = new GetFirstCollectableCommand(ref _collectableList);
+        }
+
+        private void OnPlay()
+        {
+            _playerPosition = PlayerSignals.Instance.onGetPlayerTransfrom();
+            _stackLerpMoveCommand = new StackLerpMoveCommand(ref _collectableList, ref _lerpData, _playerPosition);
         }
 
         private async void OnMergeToPLayer()

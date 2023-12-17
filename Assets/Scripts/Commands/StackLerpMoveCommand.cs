@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using UnityEngine;
 using ValueObject;
 
@@ -19,7 +20,7 @@ namespace Commands
 
         public void OnLerpStackMove()
         {
-            if (_collectable.Count > 0)
+            if (_collectable.Count > 0 && _playerPossition != null)
             {
                 //note that canbe put inside loop and perfectly fine just iteration number is inrease
                 //put pack to stack behind the player

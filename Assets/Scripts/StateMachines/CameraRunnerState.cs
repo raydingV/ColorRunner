@@ -11,7 +11,5 @@ namespace StateMachine
             _cinamationAnimationStates.Play("RunnerCam");
             StackSignals.Instance.onActivateOutlineTrasition(OutlineType.Outline);
         }
-
-
     }
 }

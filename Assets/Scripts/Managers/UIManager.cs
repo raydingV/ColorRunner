@@ -59,8 +59,8 @@ namespace Managers
             UISignals.Instance.onSetLevelText += OnSetLevelText;
             UISignals.Instance.onIdleMoneyMultiplier += OnIdleMoneyMultiplier;
             CoreGameSignals.Instance.onPlay += OnPlay;
-            CoreGameSignals.Instance.onLevelFailed += OnLevelFailed;
-            CoreGameSignals.Instance.onLevelSuccessful += OnLevelSuccessful;
+            LevelSignals.Instance.onLevelFailed += OnLevelFailed;
+            LevelSignals.Instance.onLevelSuccessful += OnLevelSuccessful;
         }
 
         private void UnsubscribeEvents()
@@ -71,8 +71,8 @@ namespace Managers
             UISignals.Instance.onSetLevelText -= OnSetLevelText;
             UISignals.Instance.onIdleMoneyMultiplier -= OnIdleMoneyMultiplier;
             CoreGameSignals.Instance.onPlay -= OnPlay;
-            CoreGameSignals.Instance.onLevelFailed -= OnLevelFailed;
-            CoreGameSignals.Instance.onLevelSuccessful -= OnLevelSuccessful;
+            LevelSignals.Instance.onLevelFailed -= OnLevelFailed;
+            LevelSignals.Instance.onLevelSuccessful -= OnLevelSuccessful;
         }
 
         private void OnDisable()
@@ -133,14 +133,14 @@ namespace Managers
         public void NextLevel()
         {
             isPrize = false;
-            CoreGameSignals.Instance.onNextLevel?.Invoke();
+            LevelSignals.Instance.onNextLevel?.Invoke();
             UISignals.Instance.onClosePanel?.Invoke(UIPanels.IdlePanel);
             UISignals.Instance.onOpenPanel?.Invoke(UIPanels.PreGamePanel);
         }
 
         public void RestartLevel()
         {
-            CoreGameSignals.Instance.onRestartLevel?.Invoke();
+            LevelSignals.Instance.onRestartLevel?.Invoke();
             UISignals.Instance.onClosePanel?.Invoke(UIPanels.InGamePanel);
             UISignals.Instance.onOpenPanel?.Invoke(UIPanels.PreGamePanel);
         }
@@ -182,6 +182,7 @@ namespace Managers
         public void NoThanksButton()
         {
             prizeScore = score;
+            UISignals.Instance.onClosePanel?.Invoke(UIPanels.EndGamePrizePanel);
         }
     }
 }

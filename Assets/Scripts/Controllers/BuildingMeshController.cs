@@ -1,37 +1,23 @@
-﻿using System.Collections;
-using Extentions;
+﻿using System;
+using DG.Tweening;
 using Managers;
-using ValueObject;
-using Enums;
 using UnityEngine;
+using MK.Toon;
 
 namespace Controllers
 {
     public class BuildingMeshController : MonoBehaviour
     {
-
-        [SerializeField] BuildingManager manager;
-        private BuildingComplateState _complateState;
-        private Material _material;
-
-        private void Awake()
-        {
-            _material = GetComponent<MeshRenderer>().material;
-        }
-
+        [SerializeField] private Renderer rend;
+        
         private void Start()
         {
-            _material.SetAlpha(0);
+            ChangeBuildingSaturation(0);
         }
 
-        public void OpenAlpha()
+        public void ChangeBuildingSaturation(float saturation)
         {
-            _material.SetAlpha(1);
-        }
-
-        public void GetData(BuildingComplateState complateState)
-        {
-            _complateState = complateState;
+            rend.material.DOFloat(saturation,"_Saturation", .5f);
         }
     }
 }
