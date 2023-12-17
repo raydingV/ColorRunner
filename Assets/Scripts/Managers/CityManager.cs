@@ -5,7 +5,6 @@ using Data.ValueObject;
 using Enums;
 using Keys;
 using Signals;
-
 using UnityEngine;
 using UnityObject;
 
@@ -44,6 +43,11 @@ namespace Managers
         #endregion
 
         private void Start()
+        {
+            Initialize();
+        }
+
+        private void Initialize()
         {
             _levelsData = GetIdleLevelBuildingData();
             GetCurrentLevelData(SaveSignals.Instance.onLoadIdleGame());

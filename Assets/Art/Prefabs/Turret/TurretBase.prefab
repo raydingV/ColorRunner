@@ -29,6 +29,7 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 6.36, y: 0, z: 5.37}
   m_LocalScale: {x: 2, y: 2, z: 2}
+  m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 5275407457438455462}
   m_Father: {fileID: 0}
@@ -53,6 +54,7 @@ MeshRenderer:
   m_CastShadows: 1
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
@@ -126,6 +128,7 @@ Transform:
   m_LocalRotation: {x: 0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: -0.0076019284, y: 0.5940336, z: -0.000000989434}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 6683873225232532350}
   m_Father: {fileID: 5275834629494686964}
@@ -150,6 +153,7 @@ MeshRenderer:
   m_CastShadows: 1
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
@@ -222,6 +226,7 @@ Transform:
   m_LocalRotation: {x: 0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: -0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 5271502658347648076}
   m_Father: {fileID: 5275407457438455462}
@@ -246,6 +251,7 @@ MeshRenderer:
   m_CastShadows: 1
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
@@ -307,6 +313,7 @@ Transform:
   m_LocalRotation: {x: -0, y: 1, z: -0, w: 0}
   m_LocalPosition: {x: 0.020499945, y: 1, z: 0.009595394}
   m_LocalScale: {x: 0.5, y: 0.5, z: 0.5}
+  m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 5275834629494686964}
   m_Father: {fileID: 5276355773585043176}
@@ -331,6 +338,7 @@ MeshRenderer:
   m_CastShadows: 1
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
@@ -383,7 +391,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 5278062138478575560}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ac35f3c246054603b5f90502b64aa5b1, type: 3}
+  m_Script: {fileID: 11500000, guid: eedcb6f475d4d234284384282e267456, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   turretMaxAngleX: {x: -10, y: 10}
@@ -474,13 +482,13 @@ PrefabInstance:
     m_RemovedComponents:
     - {fileID: 11400000, guid: c51405f0ae5da1745a111ad6383f2648, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: c51405f0ae5da1745a111ad6383f2648, type: 3}
---- !u!4 &6683873225232532350 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 400002, guid: c51405f0ae5da1745a111ad6383f2648, type: 3}
-  m_PrefabInstance: {fileID: 6683873225232669180}
-  m_PrefabAsset: {fileID: 0}
 --- !u!198 &6683873225213134398 stripped
 ParticleSystem:
   m_CorrespondingSourceObject: {fileID: 19800002, guid: c51405f0ae5da1745a111ad6383f2648, type: 3}
+  m_PrefabInstance: {fileID: 6683873225232669180}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &6683873225232532350 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 400002, guid: c51405f0ae5da1745a111ad6383f2648, type: 3}
   m_PrefabInstance: {fileID: 6683873225232669180}
   m_PrefabAsset: {fileID: 0}

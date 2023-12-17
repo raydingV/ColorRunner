@@ -7572,11 +7572,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1292108306}
   m_CullTransparentMesh: 1
---- !u!1 &1334962928 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 6480260660335183517, guid: 526e1bf378947804cbc3960d9c24344e, type: 3}
-  m_PrefabInstance: {fileID: 2721474585297547407}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1385936104
 GameObject:
   m_ObjectHideFlags: 0
@@ -10075,10 +10070,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 32bbbb0eab3e2374db79cb57a10c55e4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  RunnerCam: {fileID: 2707297507626073441}
-  MiniGameCam: {fileID: 1183177625}
-  IdleCam: {fileID: 2707297508299066787}
-  StateDrivenCameraAnimator: {fileID: 2707297507699669296}
+  RunnerCam: {fileID: 0}
+  MiniGameCam: {fileID: 0}
+  IdleCam: {fileID: 0}
+  StateDrivenCameraAnimator: {fileID: 0}
   Player: {fileID: 0}
 --- !u!114 &2707297507699669293
 MonoBehaviour:
@@ -10218,7 +10213,7 @@ MonoBehaviour:
   _collectableList: []
   _tempList: []
   colorType: 0
-  stickmanPrefab: {fileID: 1334962928}
+  stickmanPrefab: {fileID: 4703302485167264113, guid: 64f1633875949d449a608f7476afa5a7, type: 3}
 --- !u!1 &2707297507822129244
 GameObject:
   m_ObjectHideFlags: 0
@@ -10699,8 +10694,8 @@ MonoBehaviour:
   levelText: {fileID: 166952006}
   prizeText: {fileID: 2064466917}
   scoreText: {fileID: 1253537808}
-  arrowMoveAmount: 0
-  arrowMoveDuration: 0
+  arrowMoveAmount: 50
+  arrowMoveDuration: 0.05
 --- !u!114 &4470851587710500869
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -10900,6 +10895,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   States: 0
+  Fog: {fileID: 744653083}
 --- !u!4 &5657996215234706429
 Transform:
   m_ObjectHideFlags: 0

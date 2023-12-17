@@ -52,7 +52,7 @@ namespace Managers
 
         private void Start()
         {
-            _initializeStackOnStartCommand.OnInitializeStackOnStart(5);//test pupose that bind next level signal
+            _initializeStackOnStartCommand.OnInitializeStackOnStart(5);
         }
 
         private void FixedUpdate()
@@ -84,7 +84,6 @@ namespace Managers
             StackSignals.Instance.onRemoveFromStack += _removeStackCommand.OnRemoveFromStack;
             StackSignals.Instance.onCollectableRemovedFromStack += OnCollectableRemovedFromStack;
             StackSignals.Instance.onSetStackStartSize += _initializeStackOnStartCommand.OnInitializeStackOnStart;
-            //StackSignals.Instance.onThrowStackInMiniGame += OnThrowStackInMiniGame;
             StackSignals.Instance.onStackEnterDroneArea += _stackEnterDroneAreaCommand.OnStackEnterDroneArea;
             StackSignals.Instance.onMergeToPLayer += OnMergeToPLayer;
             StackSignals.Instance.onAddAfterDroneAnimationDone += _addCollectablesAfterDroneAnimationDoneCommand.OnAddCollectablesAfterDroneAnimationDone;
@@ -92,6 +91,7 @@ namespace Managers
             PlayerSignals.Instance.onChangeAllCollectableColorType += _changeAllCollectableColor.OnChangeAllCollectableColorType;
             PlayerSignals.Instance.onChangeAllCollectableColorType += OnChangeColorType;
             StackSignals.Instance.onGetColorType += GetColorType;
+            PlayerSignals.Instance.onPlayerExitDroneArea += OnCollectableRemovedFromStack;
         }
 
         private void UnSubscribe()
@@ -103,7 +103,6 @@ namespace Managers
             StackSignals.Instance.onRemoveFromStack -= _removeStackCommand.OnRemoveFromStack;
             StackSignals.Instance.onCollectableRemovedFromStack -= OnCollectableRemovedFromStack;
             StackSignals.Instance.onSetStackStartSize -= _initializeStackOnStartCommand.OnInitializeStackOnStart;
-            //StackSignals.Instance.onThrowStackInMiniGame -= OnThrowStackInMiniGame;
             StackSignals.Instance.onStackEnterDroneArea -= _stackEnterDroneAreaCommand.OnStackEnterDroneArea;
             StackSignals.Instance.onMergeToPLayer -= OnMergeToPLayer;
             StackSignals.Instance.onAddAfterDroneAnimationDone -= _addCollectablesAfterDroneAnimationDoneCommand.OnAddCollectablesAfterDroneAnimationDone;
@@ -111,6 +110,7 @@ namespace Managers
             PlayerSignals.Instance.onChangeAllCollectableColorType -= _changeAllCollectableColor.OnChangeAllCollectableColorType;
             PlayerSignals.Instance.onChangeAllCollectableColorType -= OnChangeColorType;
             StackSignals.Instance.onGetColorType -= GetColorType;
+            PlayerSignals.Instance.onPlayerExitDroneArea -= OnCollectableRemovedFromStack;
         }
 
         #endregion Event Subscriptions
@@ -153,11 +153,9 @@ namespace Managers
             
             _collectableList.Clear();
             _collectableList.TrimExcess();
-            print("Merge to player finished");
             PlayerSignals.Instance.onTranslateCameraState?.Invoke(new CameraMiniGameState());
             LevelSignals.Instance.onLevelSuccessful?.Invoke();
         }
-        // throw sticman from temporary list
 
         private int GetCollectableCount() => _collectableList.Count + _tempList.Count;
         
@@ -165,6 +163,7 @@ namespace Managers
         {
             if (GetCollectableCount() == 0)
             {
+                print("Level Failed");
                 LevelSignals.Instance.onLevelFailed?.Invoke();
                 ScoreSignals.Instance.onHideScore?.Invoke();
             }

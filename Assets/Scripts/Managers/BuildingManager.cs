@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Controllers;
 using Data.ValueObject;
 using Enums;
@@ -93,8 +94,8 @@ namespace Managers
 
         private void CheckDatas()
         {
-            CheckComplateState(_mainBuildingComplateState,_mainPayedAmount,_mainPrice);
-            CheckComplateState(_sideBuildingComplateState,_sidePayedAmount,_sidePrice);
+            CheckComplateState(true, _mainBuildingComplateState, _mainPayedAmount, _mainPrice);
+            CheckComplateState(false, _sideBuildingComplateState, _sidePayedAmount, _sidePrice);
         }
         
         public void OnPlayerEnter()
@@ -105,13 +106,11 @@ namespace Managers
                 {
                     ScoreSignals.Instance.onTotalScoreUpdate?.Invoke(-1);
                     ScoreSignals.Instance.onUpdateScoreText?.Invoke();
-                    CheckComplateState(_mainBuildingComplateState,_mainPayedAmount,_mainPrice);
+                    CheckComplateState(true, _mainBuildingComplateState, _mainPayedAmount, _mainPrice);
                     PlayerSignals.Instance.onScaleDown?.Invoke();
-                    PlayerSignals.Instance.onThrowParticule?.Invoke();
                     _mainPayedAmount++;
-                    SetText(mainText,_mainBuildingName,_mainPayedAmount,_mainPrice);
+                    SetText(mainText,_mainBuildingName, _mainPayedAmount, _mainPrice);
                     SetDataToBuildingData();
-                    print(_sidePayedAmount);
                 }
             }
             else if (_mainBuildingComplateState == BuildingComplateState.Completed && _sideBuildingComplateState == BuildingComplateState.Uncompleted)
@@ -121,8 +120,7 @@ namespace Managers
                     ScoreSignals.Instance.onTotalScoreUpdate?.Invoke(-1);
                     ScoreSignals.Instance.onUpdateScoreText?.Invoke();
                     PlayerSignals.Instance.onScaleDown?.Invoke();
-                    print(_sidePayedAmount);
-                    CheckComplateState(_sideBuildingComplateState,_sidePayedAmount,_sidePrice);
+                    CheckComplateState(false,_sideBuildingComplateState,_sidePayedAmount,_sidePrice);
                     _sidePayedAmount++;
                     SetText(sideText,_sideBuildingName,_sidePayedAmount,_sidePrice);
                     SetDataToBuildingData();
@@ -130,9 +128,9 @@ namespace Managers
             }
         }
 
-        public void CheckComplateState(BuildingComplateState complateState, int payedAmount, int price)
+        private void CheckComplateState(bool isMain,BuildingComplateState complateState, int payedAmount, int price)
         {
-            if (complateState == _mainBuildingComplateState && payedAmount >= price)
+            if (isMain && payedAmount >= price)
             {
                 _mainBuildingComplateState = BuildingComplateState.Completed;
                 mainBuilding.SetActive(false);
@@ -140,7 +138,7 @@ namespace Managers
                 mainMesh.ChangeBuildingSaturation(1.5f);
             }
 
-            else if (complateState == _sideBuildingComplateState && payedAmount >= price)
+            else if (!isMain && payedAmount >= price)
             {
                 _sideBuildingComplateState = BuildingComplateState.Completed;
                 sideBuilding.SetActive(false);

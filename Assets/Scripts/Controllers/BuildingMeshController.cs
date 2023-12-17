@@ -11,9 +11,8 @@ namespace Controllers
     {
         [SerializeField] private List<Renderer> renderers;
         
-        private void Start()
+        private void Awake()
         {
-            // deneme amacli
             ChangeBuildingSaturation(0);
         }
 

@@ -37,7 +37,6 @@ namespace Commands
             if (_collectable.Count == 0)
             {
                 StackSignals.Instance.onLastCollectableEnterDroneArea?.Invoke();
-                Debug.Log("Tetiklendim kanks");
             }
         }
     }

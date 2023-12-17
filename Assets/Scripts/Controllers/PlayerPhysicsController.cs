@@ -41,7 +41,6 @@ namespace Controllers
             
             if(other.CompareTag("IdleTrigger"))
             {
-                print("IdleTriggered");
                 PlayerSignals.Instance.onPlayerEnterIdleArea?.Invoke();
                 StackSignals.Instance.onMergeToPLayer?.Invoke();
                 PlayerSignals.Instance.onActivateObject?.Invoke();

@@ -14,7 +14,9 @@ namespace Managers
         public GameStates States;
     
         #endregion Public Variables
-    
+
+        [SerializeField] private GameObject Fog;
+        
         #endregion Self Variables
     
         private void Awake()
@@ -53,8 +55,12 @@ namespace Managers
         private void OnChangeGameState(GameStates newState)
         {
             States = newState;
+            ControlFog(newState);
         }
     
+        private void ControlFog(GameStates newState) => Fog.SetActive(newState != GameStates.Idle);
+
+
         private void OnPlayerEnterIdleArea() => OnChangeGameState(GameStates.Idle);
     
         private GameStates OnGetGameState() => States;

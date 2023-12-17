@@ -77,6 +77,9 @@ namespace Managers
         private void OnPlay()
         {
             Player = GameObject.FindGameObjectWithTag("Player").transform;
+            RunnerCam.PreviousStateIsValid = false;
+            MiniGameCam.PreviousStateIsValid = false;
+            IdleCam.PreviousStateIsValid = false;
             onTranslateCameraState(new CameraRunnerState());
         }
         private void OnPlayerEnterDroneArea() => RunnerCam.Follow = null;

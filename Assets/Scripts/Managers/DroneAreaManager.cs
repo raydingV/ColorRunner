@@ -103,17 +103,13 @@ namespace Managers
         
         private async void OnLastCollectableEnterDroneArea()
         {
-            print("LastCollectable");
             await Task.Delay(1000);
-            print("outline changed");
             StackSignals.Instance.onActivateOutlineTrasition?.Invoke(OutlineType.NonOutline);
             await Task.Delay(1000);
             DisableMatControllersCollider();
             CloseUpMat();
-            print("MatsAreClosing");
             await Task.Delay(250);
             droneController.StartDroneAnimation();
-            print("Drone started");
         }
     }
 }

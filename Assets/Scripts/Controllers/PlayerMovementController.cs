@@ -130,11 +130,8 @@ namespace Controllers
             rigidBody.angularVelocity = Vector3.zero;
         }
 
-        public void OnStartVerticalMovement(Vector3 exitPosition)
+        public void OnStartVerticalMovement()
         {
-            Vector3 setXPosition = new Vector3(exitPosition.x, transform.position.y, transform.position.z);
-            transform.position = setXPosition;
-            
             transform.DOMoveZ(20, .5f).SetRelative(true).SetEase(Ease.OutSine)
                 .OnComplete(() => { ChangeVerticalSpeed(PlayerSpeedState.Normal);});
         }
