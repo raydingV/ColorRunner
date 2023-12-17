@@ -28,8 +28,8 @@ namespace Managers
         #region Private Variables
         
         private int _levelID;
-        private LevelLoaderCommand levelLoader;
-        private ClearActiveLevelCommand levelClearer;
+        private LevelLoaderCommand levelLoader = new LevelLoaderCommand();
+        private ClearActiveLevelCommand levelClearer = new ClearActiveLevelCommand();
 
         #endregion
 
@@ -43,8 +43,6 @@ namespace Managers
         private void Initialize()
         {
             _levelID = GetActiveLevel();
-            levelLoader = new LevelLoaderCommand();
-            levelClearer = new ClearActiveLevelCommand();
         }
         
         private int GetActiveLevel()

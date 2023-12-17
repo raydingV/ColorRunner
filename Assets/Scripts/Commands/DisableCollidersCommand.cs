@@ -7,7 +7,7 @@ namespace Commands
     {
         private void OnTriggerEnter(Collider other)
         {
-            if (other.CompareTag("Obstacle") || other.CompareTag("Turret"))
+            if (other.CompareTag("Obstacle") || other.CompareTag("Collectable"))
             {
                 other.gameObject.SetActive(false);
             }

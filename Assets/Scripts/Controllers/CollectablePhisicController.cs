@@ -2,6 +2,7 @@
 using Signals;
 using StateMachine;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 namespace Controllers
 {
@@ -30,15 +31,13 @@ namespace Controllers
                 else if (!manager.CompareColor(other.transform.parent.GetComponent<CollectableManager>()
                     .currentColorType)) //call from signals
                 {
-                    manager.RemoveCollectableFromStackManager(transform.parent);
-                    other.transform.parent.gameObject.SetActive(false);
+                    manager.OnCOllisionWithObstacle(other.transform.parent.gameObject); 
                 }
             }
 
             if (other.CompareTag("Obstacle"))
             {
-                manager.RemoveCollectableFromStackManager(manager.transform);
-                other.gameObject.SetActive(false);
+                manager.OnCOllisionWithObstacle(other.gameObject); 
             }
 
             if (other.CompareTag("ExitDroneArea"))
@@ -60,9 +59,9 @@ namespace Controllers
                 if (!manager.CompareColor(other.GetComponent<TurretMatController>().currentColorType))
                 {
                     StackSignals.Instance.onWrongTurretMatAreaEntered?.Invoke(manager.transform);
-                    int randomDeath = Random.Range(0, 2);
-                    if (randomDeath == 1) return;
-                    manager.RemoveCollectableFromStackManager(transform);
+                    int randomDeath = Random.Range(0, 3);
+                    if (randomDeath != 1) return;
+                    manager.RemoveCollectableFromStackManager(manager.transform);
                 }
             }
 
@@ -79,6 +78,19 @@ namespace Controllers
             if (other.CompareTag("RainbowArea") && !manager.IsTouchTheGate)
             {
                 manager.EnterRainbowGate();
+            }
+        }
+
+        private void OnTriggerExit(Collider other)
+        {
+            if (other.CompareTag("ExitTurretArea"))
+            {
+                manager.OnTranslateAnimationState(new RunnerAnimationState());
+            }
+
+            if (other.CompareTag("ExitDroneArea"))
+            {
+                manager.OnTranslateAnimationState(new RunnerAnimationState());
             }
         }
     }

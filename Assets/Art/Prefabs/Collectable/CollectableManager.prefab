@@ -230,6 +230,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Material: {fileID: 0}
   manager: {fileID: 2360636417053245304}
+  particle: {fileID: 6147658170646792318}
 --- !u!4 &6226410590638118198 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 59f67bbb68367174d983745cffc13d12, type: 3}
@@ -334,6 +335,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 9d1846a1c8bff7142ab3959923c7d9c2, type: 3}
+--- !u!198 &6147658170646792318 stripped
+ParticleSystem:
+  m_CorrespondingSourceObject: {fileID: 198175355013017282, guid: 9d1846a1c8bff7142ab3959923c7d9c2, type: 3}
+  m_PrefabInstance: {fileID: 6309773870751000252}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &6305532006595290214 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4906107047789274, guid: 9d1846a1c8bff7142ab3959923c7d9c2, type: 3}

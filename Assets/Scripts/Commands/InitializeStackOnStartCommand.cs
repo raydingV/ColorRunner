@@ -38,9 +38,9 @@ namespace Commands
 
             for (int i = 0; i < size; i++)
             {
-                Transform frontStickman = _collectable[_collectable.Count - 1].transform;
-                frontStickman.position = new Vector3(0, frontStickman.transform.position.y,frontStickman.position.z - 1.5f);
-                GameObject stackInstance = GameObject.Instantiate(stickmanPrefab, frontStickman.position,quaternion.identity);
+                Vector3 frontStickmanPosition = _collectable[_collectable.Count - 1].transform.position;
+                frontStickmanPosition = new Vector3(0, frontStickmanPosition.y,frontStickmanPosition.z - 1.5f);
+                GameObject stackInstance = GameObject.Instantiate(stickmanPrefab, frontStickmanPosition,quaternion.identity);
                 stackInstance.transform.SetParent(_parent);
                 _collectable.Add(stackInstance.transform);
                 ScoreSignals.Instance.onCurrentLevelScoreUpdate?.Invoke(true);

@@ -72,7 +72,7 @@ namespace Controllers
             _playereAnimator = GetComponent<Animator>();
             // _playerStateMachine = GetComponent<AnimationStateMachine>();
             TranslatePlayerAnimationState(new IdleAnimationState());
-            transform.gameObject.SetActive(false);
+            // transform.gameObject.SetActive(false);
         }
     }
 }

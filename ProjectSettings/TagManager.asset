@@ -3,7 +3,25 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 2
-  tags: []
+  tags:
+  - Collected
+  - Collectable
+  - DroneArea
+  - TurretArea
+  - IdleTrigger
+  - ExitDroneArea
+  - Obstacle
+  - Gate
+  - ExitTurretArea
+  - DisableColliders
+  - RainbowArea
+  - Turret
+  - TurretMatTrigger
+  - MatTrigger
+  - Ramp
+  - MatObstical
+  - Obstical
+  - Map
   layers:
   - Default
   - TransparentFX

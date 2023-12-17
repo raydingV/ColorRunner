@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using Managers;
 using Signals;
 using StateMachine;
@@ -25,7 +24,15 @@ namespace Controllers
         private AnimationStateMachine _CollectableStateMachine;
 
         #endregion
+        
         #endregion
+        
+        private void Awake()
+        {
+            _CollectableAnimator = GetComponent<Animator>();
+            Initialize();
+        }
+        
         #region Subscriptions
 
         private void OnEnable()
@@ -48,26 +55,27 @@ namespace Controllers
             UnSubscribe();
         }
         #endregion
-        
-        
-        
-        private void Awake()
+
+        private void Initialize()
         {
-            _CollectableAnimator = GetComponent<Animator>();
-            if (manager.GetTag() == "Collected")
+            if (manager.GetTag() == "Collected" && !CoreGameSignals.Instance.onIsGameRunning())
             {
                 _CollectableStateMachine = new SneakIdleAnimationState();
             }
-            else
+            else if(manager.GetTag() != "Collected" && !CoreGameSignals.Instance.onIsGameRunning())
             {
                 _CollectableStateMachine = new IdleAnimationState();
             }
+            
+            else if (CoreGameSignals.Instance.onIsGameRunning())
+            {
+                _CollectableStateMachine = new RunnerAnimationState();
+            }
+            
             _CollectableStateMachine.SetContext(ref _CollectableAnimator);
             _CollectableStateMachine.ChangeAnimationState();
         }
-
-       
-
+        
         public void TranslateCollectableAnimationState(AnimationStateMachine state)
         {
             _CollectableStateMachine = state;
@@ -75,22 +83,14 @@ namespace Controllers
             _CollectableStateMachine.ChangeAnimationState();
         }
 
-        private void OnPlay()
-        {
-            if (manager.GetComponentInChildren<CollectablePhisicController>().CompareTag("Collected"))
-            {
-                TranslateCollectableAnimationState(new RunnerAnimationState());
-            }
-        }
-        
-        private void ActivateParticul()
-        {
-
-        }
-
         private void DestroyManager()
         {
             manager.gameObject.SetActive(false);
+        }
+        
+        private void OnPlay()
+        {
+            TranslateCollectableAnimationState(new RunnerAnimationState());
         }
     }
 }

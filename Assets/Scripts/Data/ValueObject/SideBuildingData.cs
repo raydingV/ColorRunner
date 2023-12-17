@@ -1,6 +1,7 @@
 ﻿using System;
 using Enums;
 
+
 namespace Data.ValueObject
 {
     [Serializable]

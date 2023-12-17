@@ -5,16 +5,18 @@ namespace Enums
     [Serializable]
     public enum ColorType
     {
-        LightGreen,
-        Green,
-        DarkGreen,
-        Cyan,
+        DarkRed,
         Red,
-        Yellow,
-        Orange,
-        Purple,
+        LightRed,
+        DarkBlue,
         Blue,
-        Brown,
+        LightBlue,
+        DarkGreen,
+        Green,
+        LightGreen,
+        DarkYellow,
+        Yellow,
+        LightYellow,
         RainBow
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System.Runtime.InteropServices.WindowsRuntime;
+using System.Threading.Tasks;
 using Controllers;
 using Enums;
 using Signals;
@@ -98,6 +99,11 @@ namespace Managers
             else return false;
         }
 
+        public void StartParticle()
+        {
+            meshController.StartParticle();
+        }
+
         public void OnTranslateAnimationState(AnimationStateMachine state)
         {
             if (physicController.CompareTag("Collected"))
@@ -151,6 +157,14 @@ namespace Managers
         {
             IsTouchTheGate = true;
             meshController.SetRainbowMaterial();
+        }
+
+        public async void OnCOllisionWithObstacle(GameObject _gameObject)
+        {
+            meshController.StartParticle();
+            _gameObject.SetActive(false);
+            await Task.Delay(100);
+            RemoveCollectableFromStackManager(transform);
         }
     }
 }

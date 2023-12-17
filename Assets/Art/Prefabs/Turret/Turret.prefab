@@ -28,6 +28,7 @@ Transform:
   m_LocalRotation: {x: 0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: -0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 4857788719136574}
   m_Father: {fileID: 4330698198052308}
@@ -52,6 +53,7 @@ MeshRenderer:
   m_CastShadows: 1
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
@@ -111,6 +113,7 @@ Transform:
   m_LocalRotation: {x: 0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: -0.0076019284, y: 0.5940336, z: -0.000000989434}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1675215337408070023}
   m_Father: {fileID: 4193788555034502}
@@ -135,6 +138,7 @@ MeshRenderer:
   m_CastShadows: 1
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
@@ -209,6 +213,7 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 4193788555034502}
   m_Father: {fileID: 0}
@@ -233,6 +238,7 @@ MeshRenderer:
   m_CastShadows: 1
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
@@ -286,13 +292,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 1706519756113082}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ac35f3c246054603b5f90502b64aa5b1, type: 3}
+  m_Script: {fileID: 11500000, guid: eedcb6f475d4d234284384282e267456, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   turretMaxAngleX: {x: 0, y: 0}
   turretMaxAngleY: {x: 0, y: 0}
   turret: {fileID: 1560259782622744}
-  fireParticle: {fileID: 0}
+  fireParticle: {fileID: 1675215337422226631}
   turnSpeed: 0.2
   turnDelay: 0.6
 --- !u!1001 &1675215337407683333
@@ -364,5 +370,10 @@ PrefabInstance:
 --- !u!4 &1675215337408070023 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 400002, guid: c51405f0ae5da1745a111ad6383f2648, type: 3}
+  m_PrefabInstance: {fileID: 1675215337407683333}
+  m_PrefabAsset: {fileID: 0}
+--- !u!198 &1675215337422226631 stripped
+ParticleSystem:
+  m_CorrespondingSourceObject: {fileID: 19800002, guid: c51405f0ae5da1745a111ad6383f2648, type: 3}
   m_PrefabInstance: {fileID: 1675215337407683333}
   m_PrefabAsset: {fileID: 0}

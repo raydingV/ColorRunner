@@ -9,16 +9,26 @@ namespace Managers
     public class ScoreManager : MonoBehaviour
     {
         #region Variables
+        
+        #region Serialize
 
+        [SerializeField] private float localScaleMultiplier;
+        [SerializeField] private GameObject backgroundImage;
+        [SerializeField] private Vector3 followRunnerOffset;
+        [SerializeField] private Vector3 followIdleOffset;
+        
+        #endregion
+
+        #region Private
+
+        private Vector3 followOffset;
         private int _currentScore;
         private int _totalScore;
         private Transform _target;
         private TextMeshPro _scoreText;
-
-        public float deneme;
-        [SerializeField] private Vector3 followRunnerOffset;
-        [SerializeField] private Vector3 followIdleOffset;
-        private Vector3 followOffset;
+        
+        #endregion
+        
         #endregion
 
         private void Awake()
@@ -48,7 +58,6 @@ namespace Managers
             ScoreSignals.Instance.onHideScore += OnHideScore;
             ScoreSignals.Instance.onShowScoreIdle += OnShowScore;
             ScoreSignals.Instance.onUpdateScoreAfterDroneArea += OnUpdateScoreAfterDroneArea;
-
             StackSignals.Instance.onSetScoreControllerPosition += OnSetPosition;
             PlayerSignals.Instance.onPlayerEnterIdleArea += OnPlayerEnterIdleArea;
             
@@ -66,7 +75,6 @@ namespace Managers
             ScoreSignals.Instance.onHideScore -= OnHideScore;
             ScoreSignals.Instance.onShowScoreIdle -= OnShowScore;
             ScoreSignals.Instance.onUpdateScoreAfterDroneArea -= OnUpdateScoreAfterDroneArea;
-
             StackSignals.Instance.onSetScoreControllerPosition -= OnSetPosition;
             PlayerSignals.Instance.onPlayerEnterIdleArea -= OnPlayerEnterIdleArea;
             
@@ -81,24 +89,25 @@ namespace Managers
         private void Start()
         {
             _totalScore = SaveSignals.Instance.onRunnerGameLoad().Score;
+            backgroundImage.SetActive(false);
+            _scoreText.text = "";
         }
 
         private void Update()
         {
             if (_target == null) return;
-            followOffset = followIdleOffset;
-
             transform.position = new Vector3(_target.position.x,
-                _target.transform.position.y + followOffset.y 
-                + (_target.transform.localScale.y - 1) * (_target.transform.localScale.y - 1) * deneme,
-                
+                _target.position.y + followOffset.y + 
+                (_target.transform.localScale.y - 1) * (_target.localScale.y - 1) * localScaleMultiplier,
                 _target.position.z + followOffset.z);
         }
 
         private void OnFindFollowTarget()
         {
             _target = StackSignals.Instance.onGetFirstCollectable();
+            followOffset = followRunnerOffset;
             _scoreText.text = _currentScore.ToString();
+            backgroundImage.SetActive(true);
         }
 
         private void OnCurrentLevelScoreUpdate(bool increase)
@@ -124,27 +133,34 @@ namespace Managers
         {
             _target = FindObjectOfType<PlayerManager>().transform;
             followOffset = followIdleOffset;
+            backgroundImage.SetActive(false);
             _scoreText.text = "";
         }
             
         public void OnUpdateScoreAfterDroneArea()
         {
+            backgroundImage.SetActive(true);
             _scoreText.text = _currentScore.ToString();
         }
 
         private void OnHideScore()
         {
+            backgroundImage.SetActive(false);
             _scoreText.text = "";
         }
 
         private void OnShowScore()
         {
+            backgroundImage.SetActive(true);
+            _scoreText.enabled = true;
             _currentScore = 0;
             _scoreText.text = _totalScore.ToString();
         }
         
         private void OnReset()
         {
+            backgroundImage.SetActive(false);
+            _scoreText.text = "";
             _currentScore = 0;
             followOffset = followRunnerOffset;
         }

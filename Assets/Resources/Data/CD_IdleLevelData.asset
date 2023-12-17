@@ -9,7 +9,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7593303d98eb47d8b38fe6830c883843, type: 3}
+  m_Script: {fileID: 11500000, guid: dd6f8186fad45884c938d4992d42491b, type: 3}
   m_Name: CD_IdleLevelData
   m_EditorClassIdentifier: 
   IdleLevel:
@@ -31,7 +31,7 @@ MonoBehaviour:
         mainBuildingData:
           BuildingName: Bank
           CompleteState: 0
-          Price: 125
+          Price: 100
           PayedAmount: 0
         sideBuildindData:
           BuildingName: Car Park

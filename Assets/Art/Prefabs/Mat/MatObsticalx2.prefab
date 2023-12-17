@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 7954477794781463620}
   - component: {fileID: 8014575969848650774}
   - component: {fileID: 7344016813213795538}
-  - component: {fileID: 8480359273094884191}
+  - component: {fileID: 802689513140908291}
   m_Layer: 0
   m_Name: Cube (2)
   m_TagString: MatTrigger
@@ -98,7 +98,7 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 1, y: 5.798877, z: 1.0501685}
   m_Center: {x: 0, y: 2.5892987, z: -0.02508377}
---- !u!114 &8480359273094884191
+--- !u!114 &802689513140908291
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -112,7 +112,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ColorData:
     Color: {r: 0, g: 0, b: 0, a: 0}
-  currentColorType: 0
+  currentColorType: 4
 --- !u!1 &5335635724298955633
 GameObject:
   m_ObjectHideFlags: 0
@@ -125,7 +125,7 @@ GameObject:
   - component: {fileID: 7096346806363604129}
   - component: {fileID: 5191050382750908637}
   - component: {fileID: 6601218860549822564}
-  - component: {fileID: 2049903529584553062}
+  - component: {fileID: 7578683945842120662}
   m_Layer: 0
   m_Name: Cube (1)
   m_TagString: MatTrigger
@@ -211,7 +211,7 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 1, y: 5.798877, z: 1.0501685}
   m_Center: {x: 0, y: 2.5892987, z: -0.02508377}
---- !u!114 &2049903529584553062
+--- !u!114 &7578683945842120662
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -225,7 +225,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ColorData:
     Color: {r: 0, g: 0, b: 0, a: 0}
-  currentColorType: 0
+  currentColorType: 5
 --- !u!1 &6543451158925804624
 GameObject:
   m_ObjectHideFlags: 0
