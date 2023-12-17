@@ -1,5 +1,9 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using Managers;
+using Signals;
+using StateMachine;
+using UnityEditor.Animations;
 using UnityEngine;
 
 namespace Controllers
@@ -18,24 +22,72 @@ namespace Controllers
         #region Private Variavles
 
         private ParticleSystem _particleSystem;
-        private Animator _animator;
+        private Animator _CollectableAnimator;
+        private AnimationStateMachine _CollectableStateMachine;
 
         #endregion
         #endregion
+        #region Subscriptions
+
+        private void OnEnable()
+        {
+            Subscribe();
+        }
+
+        private void Subscribe()
+        {
+            CoreGameSignals.Instance.onPlay += OnPlay;
+        }
+
+        private void UnSubscribe()
+        {
+            CoreGameSignals.Instance.onPlay -= OnPlay;
+        }
+
+        private void OnDisable()
+        {
+            UnSubscribe();
+        }
+        #endregion
+
+
 
         private void Awake()
         {
-            _animator = GetComponent<Animator>();
+            _CollectableAnimator = GetComponent<Animator>();
+            _CollectableStateMachine = new IdleAnimationState();
+            _CollectableStateMachine.SetContext(ref _CollectableAnimator);
+            _CollectableStateMachine.ChangeAnimationState();
+
+            if (manager.GetComponentInChildren<CollectablePhisicController>().CompareTag("Collected"))
+            {
+                TranslateAnimationState(new SneakIdleAnimationState());
+            }
         }
 
-        public void AnimationStateChange()
+        public void TranslateAnimationState(AnimationStateMachine state)
         {
-            _animator.SetTrigger("Run");
+            _CollectableStateMachine = state;
+            _CollectableStateMachine.SetContext(ref _CollectableAnimator);
+            _CollectableStateMachine.ChangeAnimationState();
+        }
+
+        private void OnPlay()
+        {
+            if (manager.GetComponentInChildren<CollectablePhisicController>().CompareTag("Collected"))
+            {
+                TranslateAnimationState(new RunnerAnimationState());
+            }
         }
 
         private void ActivateParticul()
         {
 
+        }
+
+        private void DestroyManager()
+        {
+            manager.gameObject.SetActive(false);
         }
     }
 }

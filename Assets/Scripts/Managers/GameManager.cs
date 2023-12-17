@@ -7,8 +7,15 @@ using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
+    #region Self Variables
+
+    #region Public Variables
 
     public GameStates States;
+
+    #endregion
+
+    #endregion
 
     private void Awake()
     {
@@ -24,12 +31,14 @@ public class GameManager : MonoBehaviour
 
     private void SubscribeEvents()
     {
-        
+        CoreGameSignals.Instance.onChangeGameState += OnChangeGameState;
+        CoreGameSignals.Instance.onSaveGameData += OnSaveGame;
     }
 
     private void UnsubscribeEvents()
     {
-        
+        CoreGameSignals.Instance.onChangeGameState -= OnChangeGameState;
+        CoreGameSignals.Instance.onSaveGameData -= OnSaveGame;
     }
 
     private void OnDisable()
@@ -42,4 +51,11 @@ public class GameManager : MonoBehaviour
         States = newState;
     }
 
+    private void OnSaveGame(SaveGameDataParams saveDataParams)
+    {
+        if (saveDataParams.Level != null)
+        {
+            ES3.Save("Level", saveDataParams.Level);
+        }
+    }
 }

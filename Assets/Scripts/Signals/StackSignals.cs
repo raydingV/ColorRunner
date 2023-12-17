@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Enums;
 using UnityEngine;
 using Extentions;
 
@@ -16,10 +13,17 @@ namespace Signals
         }
 
         public Action<Transform> onAddStack;
-        public Action<Transform> OnRemoveFromStack;
-        public Action<int> OnSetStackStartSize;
-        public Action OnLerpStack;
-        public Action OnShakeStackSize;
-        public Action OnThrowStackInMiniGame;
+        public Action<Transform> onRemoveFromStack;
+        public Action<int> onSetStackStartSize;
+        public Action onLerpStack;
+        public Action onShakeStackSize;
+        public Action onThrowStackInMiniGame;
+        public Action<Transform, Transform> onStackEnterDroneArea;
+        public Action onLastCollectableEnterDroneArea;
+        public Action onDroneAnimationComplated;
+        public Action<Transform> onWrongTurretMatAreaEntered;
+        public Action<OutlineType> onActivateOutlineTrasition;
+        public Action onMergeToPLayer;
+        public Action<bool, Transform> onAddAfterDroneAnimationDone;
     }
 }

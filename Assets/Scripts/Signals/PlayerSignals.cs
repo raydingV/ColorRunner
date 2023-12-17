@@ -1,21 +1,28 @@
 using System;
 using Extentions;
 using UnityEngine;
+using StateMachine;
+using Enums;
 using UnityEngine.Events;
 using UnityEngine.WSA;
+using UnityEditor.Animations;
 
 namespace Signals
 {
     public class PlayerSignals : MonoSingleton<PlayerSignals>
     {
-        public Func<float> onPlayerRotate;
-        //change collectable material signals
-        public Action<Material> onChangeMaterial;
-        public Action<Color> onChangeColor;
-
         protected override void Awake()
         {
             base.Awake();
         }
+
+        public Func<float> onPlayerRotate;
+        public Action onPlayerEnterDroneArea;
+        public Action onPlayerExitDroneArea;
+        public Action onPlayerEnterTurretArea;
+        public Action onPlayerExitTurretArea;
+        public Action<Material> onChangeMaterial;
+        public Action<AnimationStateMachine> onTranslateAnimationState;
+        public Action<ColorType> onChangeAllCollectableColorType;
     }
 }

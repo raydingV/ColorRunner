@@ -1,5 +1,10 @@
 ﻿using System.Collections;
 using Managers;
+using MK.Toon;
+using DG.Tweening;
+using Enums;
+using UnityObject;
+using ValueObject;
 using UnityEngine;
 
 namespace Controllers
@@ -10,13 +15,21 @@ namespace Controllers
 
         #region Private Variavles
 
-        private SkinnedMeshRenderer _renderer;
+        private ColorData _colorData;
 
         #endregion
 
         #region Serialize Variavles
 
-        [SerializeField] CollectableManager _manager;
+        [SerializeField] CollectableManager manager;
+
+        #endregion
+
+
+        #region Public Variables
+
+        public Material _material;
+
 
         #endregion
 
@@ -24,22 +37,40 @@ namespace Controllers
 
         private void Awake()
         {
-            _renderer = GetComponent<SkinnedMeshRenderer>();
-        }
-
-        private void SetParticulColor(Color color)
-        {
+            _material = GetComponent<SkinnedMeshRenderer>().material;
 
         }
 
-        public void SetMatarial(Material material)
+        private void Start()
         {
-            _renderer.material = material;
+            GetColorData();
+            _material.color = _colorData.Color;
         }
 
-        private void AcrivateOutlineTrasition(/*state*/)
+        public void ChangeMatarialColor()
         {
 
+            GetColorData();
+            _material.color = _colorData.Color;
+        }
+
+        private void GetColorData() => _colorData = Resources.Load<CD_ColorData>("Data/CD_ColorData").Colors[(int)manager.currentColorType];
+
+        public void SetCollectableMatarial(Material material)
+        {
+            _material.color = material.color;
+        }
+
+        public void ActivateOutlineTrasition(OutlineType type)
+        {
+            if (type == OutlineType.NonOutline)
+            {
+                _material.DOFloat(0, "_OutlineSize", 1f);
+            }
+            else if (type == OutlineType.Outline)
+            {
+                _material.DOFloat(100, "_OutlineSize", 1f);
+            }
         }
     }
 }

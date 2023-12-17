@@ -1,6 +1,9 @@
 ﻿using System;
 using Controllers;
+using Enums;
 using Signals;
+using StateMachine;
+using UnityEditor.Animations;
 using UnityEngine;
 
 namespace Managers
@@ -13,24 +16,25 @@ namespace Managers
         #region Serialize Variables
 
         [SerializeField] CollectableMeshController meshController;
-        [SerializeField] CollectablePhisicController phisicController;
+        [SerializeField] CollectablePhisicController physicController;
         [SerializeField] CollectableAnimationController animatorController;
+
 
         #endregion
 
         #region Private Variables
-        //write collectable State
-        private Material _playerMat;
+
+        [SerializeField] private bool _isDead;
+        #endregion
+
+        #region public Variable
+
+        public ColorType currentColorType;
 
         #endregion
 
         #endregion
 
-        private void Awake()
-        {
-            _playerMat = GameObject.FindObjectOfType<PlayerMeshController>().GetComponent<SkinnedMeshRenderer>()
-                .material;
-        }
 
         #region Subscriptions
 
@@ -41,13 +45,18 @@ namespace Managers
 
         private void Subscribe()
         {
-            PlayerSignals.Instance.onChangeMaterial += OnSetMaterial;
+            PlayerSignals.Instance.onChangeMaterial += OnSetCollectableMaterial;
+            PlayerSignals.Instance.onTranslateAnimationState += OnTranslateAnimationState;
+            StackSignals.Instance.onActivateOutlineTrasition += OnActivateOutlineTrasition;
+            StackSignals.Instance.onDroneAnimationComplated += OnDroneAnimationComplated;
         }
 
         private void UnSubscribe()
         {
-
-            PlayerSignals.Instance.onChangeMaterial -= OnSetMaterial;
+            PlayerSignals.Instance.onChangeMaterial -= OnSetCollectableMaterial;
+            PlayerSignals.Instance.onTranslateAnimationState -= OnTranslateAnimationState;
+            StackSignals.Instance.onActivateOutlineTrasition -= OnActivateOutlineTrasition;
+            StackSignals.Instance.onDroneAnimationComplated -= OnDroneAnimationComplated;
         }
 
         private void OnDisable()
@@ -56,14 +65,76 @@ namespace Managers
         }
         #endregion
 
-        private void OnSetMaterial(Material material)
+        public void ChangeMatarialColor(ColorType type)
         {
-            meshController.SetMatarial(_playerMat);
+            currentColorType = type;
+            meshController.ChangeMatarialColor();
         }
+
+        private void OnTranslateAnimationState(AnimationStateMachine state)
+        {
+            if (physicController.CompareTag("Collected"))
+            {
+                animatorController.TranslateAnimationState(state);
+            }
+        }
+
+        private void OnSetCollectableMaterial(Material material)
+        {
+            if (physicController.CompareTag("Collected"))
+            {
+                meshController.SetCollectableMatarial(material);
+            }
+        }
+
+        public bool CompareColor(ColorType type)
+        {
+            if (currentColorType == type)
+            {
+                return true;
+            }
+            else return false;
+        }
+
+        private void OnActivateOutlineTrasition(OutlineType type)
+        {
+            if (physicController.CompareTag("Collected"))
+            {
+                meshController.ActivateOutlineTrasition(type);
+            }
+        }
+
+        public void AddCollectableToStackManager(Transform _transform)
+        {
+            StackSignals.Instance.onAddStack(_transform);
+            _transform.rotation = new Quaternion(0, 0, 0, 0);
+        }
+
+        public void RemoveCollectableFromStackManager(Transform transform)
+        {
+            StackSignals.Instance.onRemoveFromStack?.Invoke(transform);
+        }
+
 
         public void RotateMeshForward()
         {
-            animatorController.transform.rotation = new Quaternion(0, 0, 0,0);
+            StackSignals.Instance.onRemoveFromStack(transform);
         }
+
+        private void OnDroneAnimationComplated()
+        {
+            if (_isDead)
+            {
+                OnTranslateAnimationState(new DeathAnimationState());
+            }
+            else
+            {
+                OnTranslateAnimationState((new RunnerAnimationState()));
+                meshController.ActivateOutlineTrasition(OutlineType.Outline);
+            }
+            StackSignals.Instance.onAddAfterDroneAnimationDone?.Invoke(_isDead, transform);
+        }
+
+        public bool IsDead { get { return _isDead; } set { _isDead = value; } }
     }
 }

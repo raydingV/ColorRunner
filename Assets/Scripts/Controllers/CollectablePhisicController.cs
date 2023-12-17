@@ -1,4 +1,5 @@
-﻿using Managers;
+﻿using System;
+using Managers;
 using Signals;
 using UnityEngine;
 
@@ -19,22 +20,43 @@ namespace Controllers
 
         private void OnTriggerEnter(Collider other)
         {
-            if(other.CompareTag("Collectable") && CompareTag("Collected"))
+            if (other.CompareTag("Collectable") && CompareTag("Collected"))
             {
-                StackSignals.Instance.onAddStack?.Invoke(other.transform);
+                other.tag = "Collected";
+                if (_manager.CompareColor(other.transform.parent.GetComponent<CollectableManager>().currentColorType))
+                {
+                    _manager.AddCollectableToStackManager(other.transform.parent);
+                }
+                else if (!_manager.CompareColor(other.transform.parent.GetComponent<CollectableManager>()
+                    .currentColorType)) //call from signals
+                {
+                    _manager.RemoveCollectableFromStackManager(transform.parent);
+                    other.transform.parent.gameObject.SetActive(false);
+                }
             }
 
-            //test purposes
-            if(other.CompareTag("Player") && CompareTag("Collectable"))
+            if (other.CompareTag("Obstacle"))
             {
-                StackSignals.Instance.onAddStack?.Invoke(transform.parent);
-                _manager.RotateMeshForward();
+                _manager.RemoveCollectableFromStackManager(_manager.transform);
+                other.gameObject.SetActive(false);
             }
 
-            if(other.CompareTag("Obstical"))
+            if (other.CompareTag("MatTrigger"))
             {
-                StackSignals.Instance.OnRemoveFromStack?.Invoke(transform);
-                Destroy(other.gameObject); 
+                StackSignals.Instance.onStackEnterDroneArea?.Invoke(_manager.transform, other.transform);
+
+                if (!_manager.CompareColor(other.GetComponent<MatController>().currentColorType))
+                {
+                    _manager.IsDead = true;
+                }
+            }
+
+            if (other.CompareTag("TurretMatTrigger"))
+            {
+                if (!_manager.CompareColor(other.GetComponent<TurretMatController>().currentColorType))
+                {
+                    StackSignals.Instance.onWrongTurretMatAreaEntered?.Invoke(_manager.transform);
+                }
             }
         }
     }

@@ -12,11 +12,13 @@ namespace Managers
 {
     public class PlayerManager : MonoBehaviour
     {
+        #region Variables
         private PlayerData _playerData;
         [SerializeField] private PlayerMovementController playerMovementController;
         [SerializeField] private PlayerPhysicsController playerPhysicsController;
         [SerializeField] private PlayerMeshController playerMeshController;
         [SerializeField] private PlayerAnimationController playerAnimationController;
+        #endregion
 
         #region Event Subsicription
 
@@ -33,7 +35,10 @@ namespace Managers
             InputSignals.Instance.onPointerReleased += OnInputReleased;
             InputSignals.Instance.onInputParamsUpdate += OnInputParamsUpdate;
             InputSignals.Instance.onJoystickStateChange += OnJoystickStateChange;
-            PlayerSignals.Instance.onChangeColor += OnChangePlayerColor;
+            PlayerSignals.Instance.onPlayerEnterTurretArea += OnPlayerEnterTurretArea;
+            PlayerSignals.Instance.onPlayerExitTurretArea += OnPlayerExitTurretArea;
+            PlayerSignals.Instance.onPlayerEnterDroneArea += OnPlayerEnterDroneArea;
+            PlayerSignals.Instance.onPlayerExitDroneArea += OnPlayerExitDroneArea;
         }
 
         private void UnsubscribeEvents()
@@ -44,7 +49,10 @@ namespace Managers
             InputSignals.Instance.onPointerReleased -= OnInputReleased;
             InputSignals.Instance.onInputParamsUpdate -= OnInputParamsUpdate;
             InputSignals.Instance.onJoystickStateChange -= OnJoystickStateChange;
-            PlayerSignals.Instance.onChangeColor -= OnChangePlayerColor;
+            PlayerSignals.Instance.onPlayerEnterTurretArea -= OnPlayerEnterTurretArea;
+            PlayerSignals.Instance.onPlayerExitTurretArea -= OnPlayerExitTurretArea;
+            PlayerSignals.Instance.onPlayerEnterDroneArea -= OnPlayerEnterDroneArea;
+            PlayerSignals.Instance.onPlayerExitDroneArea -= OnPlayerExitDroneArea;
         }
 
         private void OnDisable()
@@ -70,7 +78,6 @@ namespace Managers
         private void OnPlay()
         {
             playerMovementController.ActivateMovement();
-            playerAnimationController.SetAnimationState(SticmanAnimationType.Run);
         }
 
         private void OnPointerDown()
@@ -114,7 +121,7 @@ namespace Managers
         public void JumpPlayerOnRamp()
         {
             // transform.position = new Vector3(transform.position.x, Mathf.Lerp(transform.position.y, 25, 25 * Time.deltaTime), transform.position.z);
-            transform.DOMoveY(15, 1f).SetEase(Ease.OutCubic).SetAutoKill();
+            // transform.DOMoveY(15, 1f).SetEase(Ease.OutCubic).SetAutoKill();
         }
 
         private void OnChangePlayerGradientColor()
@@ -122,25 +129,39 @@ namespace Managers
 
         }
 
-        private void OnChangePlayerColor(Color color)
+        private void OnChangePlayerColor(Color color) { playerMeshController.ChangeMaterialColor(color); }
+
+        private void ActivateMovement() { playerMovementController.ActivateMovement(); }
+
+        public void DeactivateMovement() { playerMovementController.DeactivateMovement(); }
+
+        private void OnPlayerEnterTurretArea()
         {
-            playerMeshController.ChangeMaterialColor(color);
+            _playerData.playerMovementData.RunnerForwardSpeed = 5f;
+            SetPlayerDataToControllers();
+            playerAnimationController.SetAnimationState(SticmanAnimationType.SneakWalk);
         }
 
-        private void ActivateMovement()
+        private void OnPlayerExitTurretArea()
         {
-
+            _playerData.playerMovementData.RunnerForwardSpeed = 10f;
+            SetPlayerDataToControllers();
+            playerAnimationController.SetAnimationState(SticmanAnimationType.Run);
         }
 
-        private void DeactivateMovement()
+        private void OnPlayerEnterDroneArea()
         {
+            playerMovementController.DroneAreaMovement(transform);
+        }
 
+        private void OnPlayerExitDroneArea()
+        {
+            playerMovementController.ExitDroneAreaMovement();
         }
 
         private void OnReset()
         {
 
         }
-
     }
 }
