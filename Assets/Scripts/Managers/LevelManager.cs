@@ -29,7 +29,7 @@ namespace Managers
         
         private int _levelID;
         private LevelLoaderCommand levelLoader;
-        private Commands.ClearActiveLevelCommand levelClearer;
+        private ClearActiveLevelCommand levelClearer;
 
         #endregion
 
@@ -44,7 +44,7 @@ namespace Managers
         {
             _levelID = GetActiveLevel();
             levelLoader = new LevelLoaderCommand();
-            levelClearer = new Commands.ClearActiveLevelCommand();
+            levelClearer = new ClearActiveLevelCommand();
         }
         
         private int GetActiveLevel()

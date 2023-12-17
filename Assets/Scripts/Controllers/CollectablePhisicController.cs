@@ -41,6 +41,11 @@ namespace Controllers
                 other.gameObject.SetActive(false);
             }
 
+            if (other.CompareTag("ExitDroneArea"))
+            {
+                manager.OnTranslateAnimationState(new RunnerAnimationState());
+            }
+            
             if (other.CompareTag("MatTrigger"))
             {
                 StackSignals.Instance.onStackEnterDroneArea?.Invoke(manager.transform, other.transform);

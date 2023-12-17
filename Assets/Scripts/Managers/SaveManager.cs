@@ -21,6 +21,7 @@ namespace Managers
             SaveSignals.Instance.onIdleSaveData += OnIdleSaveData;
             SaveSignals.Instance.onSaveIdleParams += IdleSaveGame;
             SaveSignals.Instance.onLoadIdleGame += OnIdleGameLoad;
+            SaveSignals.Instance.onRunnerGameLoad += OnRunnerGameLoad;
         }
 
         private void UnsubscribeEvents()
@@ -29,6 +30,7 @@ namespace Managers
             SaveSignals.Instance.onIdleSaveData -= OnIdleSaveData;
             SaveSignals.Instance.onSaveIdleParams -= IdleSaveGame;
             SaveSignals.Instance.onLoadIdleGame -= OnIdleGameLoad;
+            SaveSignals.Instance.onRunnerGameLoad -= OnRunnerGameLoad;
         }
 
         private void OnDisable()
@@ -42,7 +44,7 @@ namespace Managers
             RunnerSaveGame(
                 new SaveRunnerGameDataParams()
                 {
-                   // Money = SaveSignals.Instance.onGetMoney(),
+                    Score = ScoreSignals.Instance.totalScore(),
                     Level = SaveSignals.Instance.onGetRunnerLevelID(),
                 }
             );
@@ -50,10 +52,19 @@ namespace Managers
 
         private void RunnerSaveGame(SaveRunnerGameDataParams saveDataParams)
         {
-            if (saveDataParams.Level != null) ES3.Save("Level", saveDataParams.Level);
-            //if (saveDataParams.Money != null) ES3.Save("Money", saveDataParams.Money);
+            if (saveDataParams.Level != null) ES3.Save("Level", saveDataParams.Level, "RunnerGame.es3");
+            if (saveDataParams.Score != null) ES3.Save("Score", saveDataParams.Score, "RunnerGame.es3");
         }
 
+        private SaveRunnerGameDataParams OnRunnerGameLoad()
+        {
+            return new SaveRunnerGameDataParams()
+            {
+                Level = ES3.KeyExists("Level","RunnerGame.es3") ? ES3.Load<int>("Level","RunnerGame.es3") : 1,
+                Score = ES3.KeyExists("Score","RunnerGame.es3") ? ES3.Load<int>("Score","RunnerGame.es3") : 1,
+            };
+        }
+        
         private void OnIdleSaveData()
         {
 

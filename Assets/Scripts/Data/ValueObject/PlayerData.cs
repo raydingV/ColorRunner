@@ -17,6 +17,7 @@ public class PlayerMovementData
     public float RunnerSidewaySpeed = 2f;
     public float SizeUpValue = 0.025f;
     public float MaxSizeValue = 2.5f;
+    public float MinSizeValue = 1f;
 
     [Space]
     [Header("Idle")]

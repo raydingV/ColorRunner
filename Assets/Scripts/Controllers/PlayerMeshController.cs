@@ -4,7 +4,7 @@ using UnityEngine;
 namespace Controllers
 {
     public class PlayerMeshController : MonoBehaviour
-    {
+    { 
         private SkinnedMeshRenderer _renderer;
 
         private void Awake()

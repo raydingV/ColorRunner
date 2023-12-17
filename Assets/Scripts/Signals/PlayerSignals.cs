@@ -32,6 +32,8 @@ namespace Signals
         public Action<ColorType> onChangeAllCollectableColorType;
         public Action<AnimationStateMachine> onTranslatePlayerAnimationState;
         public Func<Transform> onGetPlayerTransfrom = delegate { return null;};
-
+        public Action onActivateObject;
+        public Action onScaleDown;
+        public Action onThrowParticule;
     }
 }

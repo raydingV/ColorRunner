@@ -20,7 +20,6 @@ namespace Controllers
 
             if(other.CompareTag("Gate"))
             {
-                Material color = other.GetComponent<MeshRenderer>().material;
                 PlayerSignals.Instance.onChangeAllCollectableColorType(other.GetComponent<GateController>().currentColorType);
             }
 
@@ -45,6 +44,7 @@ namespace Controllers
                 print("IdleTriggered");
                 PlayerSignals.Instance.onPlayerEnterIdleArea?.Invoke();
                 StackSignals.Instance.onMergeToPLayer?.Invoke();
+                PlayerSignals.Instance.onActivateObject?.Invoke();
                 other.gameObject.SetActive(false);
             }
         }

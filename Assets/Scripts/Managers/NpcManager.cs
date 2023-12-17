@@ -1,6 +1,8 @@
 ﻿ using Assets.Scripts.Controllers;
 using DG.Tweening;
 using Enums;
+using Signals;
+using System;
 using UnityEngine;
 
 namespace Assets.Scripts.Managers
@@ -15,6 +17,8 @@ namespace Assets.Scripts.Managers
 
         #endregion Public Variables
 
+        public NpcMeshController MeshController => meshController;
+
         #region Serialize Variables
         [SerializeField] private NpcPhysicController physicController;
         [SerializeField] private NpcMeshController meshController;
@@ -22,6 +26,35 @@ namespace Assets.Scripts.Managers
         #endregion Serialize Variables
 
         #endregion Self Variables
+
+        #region Subscriptions
+
+        private void OnEnable()
+        {
+            Subscribe();
+        }
+
+        private void Subscribe()
+        {
+            PlayerSignals.Instance.onActivateObject += OnActivateObject;
+        }
+
+        private void UnSubscribe()
+        {
+            PlayerSignals.Instance.onActivateObject -= OnActivateObject;
+        }
+
+        private void OnDisable()
+        {
+            UnSubscribe();
+        }
+
+        #endregion
+
+        private void OnActivateObject()
+        {
+            meshController.gameObject.SetActive(true);
+        }
 
         public void OnChangeMatarialColor(ColorType type)
         {

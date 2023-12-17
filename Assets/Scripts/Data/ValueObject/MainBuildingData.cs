@@ -8,7 +8,7 @@ namespace Data.ValueObject
     public class MainBuildingData
     {
         public string BuildingName;
-        
+
         public BuildingComplateState CompleteState = BuildingComplateState.Uncompleted;
         public int Price;
         public int PayedAmount;

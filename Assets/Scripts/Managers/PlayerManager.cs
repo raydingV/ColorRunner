@@ -4,7 +4,9 @@ using Enums;
 using Keys;
 using Signals;
 using StateMachine;
+using System;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 namespace Managers
 {
@@ -20,6 +22,7 @@ namespace Managers
         [SerializeField] private PlayerPhysicsController physicsController;
         [SerializeField] private PlayerMeshController meshController;
         [SerializeField] private PlayerAnimationController animationController;
+        [SerializeField] public ParticleSystem particule; 
 
         #endregion Seriliazed Field
 
@@ -67,6 +70,8 @@ namespace Managers
             PlayerSignals.Instance.onPlayerEnterIdleArea += OnPlayerEnterIdleArea;
             PlayerSignals.Instance.onPlayerScaleUp += OnPlayerScaleUp;
             PlayerSignals.Instance.onTranslatePlayerAnimationState += OnTranslatePlayerAnimationState;
+            PlayerSignals.Instance.onScaleDown += OnScaleDown;
+            PlayerSignals.Instance.onThrowParticule += OnThrowParticule;    
 
             LevelSignals.Instance.onLevelFailed += OnLevelFailed;
             
@@ -92,10 +97,17 @@ namespace Managers
             PlayerSignals.Instance.onPlayerEnterIdleArea -= OnPlayerEnterIdleArea;
             PlayerSignals.Instance.onPlayerScaleUp -= OnPlayerScaleUp;
             PlayerSignals.Instance.onTranslatePlayerAnimationState -= OnTranslatePlayerAnimationState;
+            PlayerSignals.Instance.onScaleDown -= OnScaleDown;
+            PlayerSignals.Instance.onThrowParticule -= OnThrowParticule;    
 
             LevelSignals.Instance.onLevelFailed -= OnLevelFailed;
             
             RunnerSignals.Instance.onDroneAnimationComplated -= OnDroneAnimationComplated;
+        }
+
+        public void OnThrowParticule()
+        {
+            particule.Play();
         }
 
         private void OnDisable()
@@ -193,6 +205,12 @@ namespace Managers
         {
             if (transform.localScale.x >= _playerData.playerMovementData.MaxSizeValue) return;
             transform.DOScale(transform.localScale + Vector3.one * _playerData.playerMovementData.SizeUpValue, .1f);
+        }
+
+        private void OnScaleDown()
+        {
+            if (transform.localScale.x <= _playerData.playerMovementData.MinSizeValue) return;
+            transform.DOScale(transform.localScale + Vector3.one * -_playerData.playerMovementData.SizeUpValue * 2, .1f);
         }
 
         private void OnTranslatePlayerAnimationState(AnimationStateMachine state)

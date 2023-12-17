@@ -2,6 +2,7 @@
 using Extentions;
 using Keys;
 using UnityEngine.Events;
+using UnityEngine.UI;
 
 namespace Signals
 {
@@ -9,6 +10,7 @@ namespace Signals
     {
         public UnityAction onRunnerSaveData = delegate { };
         public UnityAction onIdleSaveData = delegate {  };
+        public Func<SaveRunnerGameDataParams> onRunnerGameLoad;
         
         public Func<int> onGetRunnerLevelID = delegate { return 0; };
         public Func<int> onGetIdleLevelId = delegate { return 0;};

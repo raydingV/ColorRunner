@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using Commands;
 using Controllers;
 using DG.Tweening;
@@ -31,7 +32,7 @@ namespace Managers
 
         #region Private Variables
 
-        private int score = 100, prizeScore, scoreMultiplier; // score = Scoresignalsden cekilecek.
+        private int score, prizeScore, scoreMultiplier; // score = Scoresignalsden cekilecek.
         private bool isPrize;
         private PrizeArrowMoveCommand _prizeArrowMoveCommand;
 
@@ -57,7 +58,13 @@ namespace Managers
             UISignals.Instance.onClosePanel += OnClosePanel;
             UISignals.Instance.onSetLevelText += OnSetLevelText;
             UISignals.Instance.onIdleMoneyMultiplier += OnIdleMoneyMultiplier;
+            
+            ScoreSignals.Instance.onUpdateScoreText += UpdateScoreText;
+
             CoreGameSignals.Instance.onPlay += OnPlay;
+            
+            PlayerSignals.Instance.onPlayerExitDroneArea += OnPlayerExitDroneArea;
+            
             LevelSignals.Instance.onLevelFailed += OnLevelFailed;
             LevelSignals.Instance.onLevelSuccessful += OnLevelSuccessful;
         }
@@ -68,7 +75,13 @@ namespace Managers
             UISignals.Instance.onClosePanel -= OnClosePanel;
             UISignals.Instance.onSetLevelText -= OnSetLevelText;
             UISignals.Instance.onIdleMoneyMultiplier -= OnIdleMoneyMultiplier;
+            
+            ScoreSignals.Instance.onUpdateScoreText -= UpdateScoreText;
+            
             CoreGameSignals.Instance.onPlay -= OnPlay;
+            
+            PlayerSignals.Instance.onPlayerExitDroneArea -= OnPlayerExitDroneArea;
+            
             LevelSignals.Instance.onLevelFailed -= OnLevelFailed;
             LevelSignals.Instance.onLevelSuccessful -= OnLevelSuccessful;
         }
@@ -110,15 +123,24 @@ namespace Managers
         private void OnLevelSuccessful()
         {
             isPrize = true;
+            score = ScoreSignals.Instance.currentScore();
             UISignals.Instance.onClosePanel?.Invoke(UIPanels.InGamePanel);
             UISignals.Instance.onOpenPanel?.Invoke(UIPanels.EndGamePrizePanel);
             IdleMoneyMultiplier();
         }
 
+        private async void OnPlayerExitDroneArea()
+        {
+            UISignals.Instance.onOpenPanel?.Invoke(UIPanels.X2Panel);
+            await Task.Delay(500);
+            UISignals.Instance.onClosePanel?.Invoke(UIPanels.X2Panel);
+        }
+        
         public void Play()
         {
             PlayerSignals.Instance.onTranslateCollectableAnimationState(new RunnerAnimationState());
             CoreGameSignals.Instance.onPlay?.Invoke();
+            scoreText.text = ScoreSignals.Instance.totalScore().ToString();
         }
 
         public void NextLevel()
@@ -130,6 +152,8 @@ namespace Managers
             UISignals.Instance.onClosePanel?.Invoke(UIPanels.IdlePanel);
             UISignals.Instance.onClosePanel?.Invoke(UIPanels.InGamePanel);
             UISignals.Instance.onOpenPanel?.Invoke(UIPanels.PreGamePanel);
+            
+            //Score Savele
         }
 
         public void RestartLevel()
@@ -173,8 +197,11 @@ namespace Managers
         
         public void ClaimButton()
         {
-            //prizeScoreu Signalse gonder.
+            ScoreSignals.Instance.onTotalScoreUpdate?.Invoke(prizeScore);
+            ScoreSignals.Instance.onShowScoreIdle?.Invoke();
+            UpdateScoreText();
             CoreGameSignals.Instance.onChangeGameState?.Invoke(GameStates.Idle);
+            UISignals.Instance.onClosePanel?.Invoke(UIPanels.EndGamePrizePanel);
             UISignals.Instance.onOpenPanel?.Invoke(UIPanels.IdlePanel);
             UISignals.Instance.onClosePanel?.Invoke(UIPanels.InGamePanel);
             PlayerSignals.Instance.onTranslateCameraState?.Invoke(new CameraIdleState());
@@ -183,11 +210,19 @@ namespace Managers
         public void NoThanksButton()
         {
             prizeScore = score;
+            ScoreSignals.Instance.onTotalScoreUpdate?.Invoke(prizeScore);
+            ScoreSignals.Instance.onShowScoreIdle?.Invoke();
+            UpdateScoreText();
             CoreGameSignals.Instance.onChangeGameState?.Invoke(GameStates.Idle);
             UISignals.Instance.onClosePanel?.Invoke(UIPanels.EndGamePrizePanel);
             UISignals.Instance.onClosePanel?.Invoke(UIPanels.InGamePanel);
             UISignals.Instance.onOpenPanel?.Invoke(UIPanels.IdlePanel);
             PlayerSignals.Instance.onTranslateCameraState?.Invoke(new CameraIdleState());
+        }
+
+        private void UpdateScoreText()
+        {
+            scoreText.text = ScoreSignals.Instance.totalScore().ToString();
         }
     }
 }

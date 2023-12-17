@@ -4,6 +4,7 @@ using DG.Tweening;
 using Enums;
 using Signals;
 using System.Collections.Generic;
+using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading.Tasks;
 using StateMachine;
 using UnityEngine;
@@ -89,6 +90,8 @@ namespace Managers
             StackSignals.Instance.onAddAfterDroneAnimationDone += _addCollectablesAfterDroneAnimationDoneCommand.OnAddCollectablesAfterDroneAnimationDone;
             StackSignals.Instance.onGetFirstCollectable += _getFirstCollectableCommand.OnGetFirstCollectable;
             PlayerSignals.Instance.onChangeAllCollectableColorType += _changeAllCollectableColor.OnChangeAllCollectableColorType;
+            PlayerSignals.Instance.onChangeAllCollectableColorType += OnChangeColorType;
+            StackSignals.Instance.onGetColorType += GetColorType;
         }
 
         private void UnSubscribe()
@@ -104,8 +107,10 @@ namespace Managers
             StackSignals.Instance.onStackEnterDroneArea -= _stackEnterDroneAreaCommand.OnStackEnterDroneArea;
             StackSignals.Instance.onMergeToPLayer -= OnMergeToPLayer;
             StackSignals.Instance.onAddAfterDroneAnimationDone -= _addCollectablesAfterDroneAnimationDoneCommand.OnAddCollectablesAfterDroneAnimationDone;
-            StackSignals.Instance.onGetFirstCollectable += _getFirstCollectableCommand.OnGetFirstCollectable;
+            StackSignals.Instance.onGetFirstCollectable -= _getFirstCollectableCommand.OnGetFirstCollectable;
             PlayerSignals.Instance.onChangeAllCollectableColorType -= _changeAllCollectableColor.OnChangeAllCollectableColorType;
+            PlayerSignals.Instance.onChangeAllCollectableColorType -= OnChangeColorType;
+            StackSignals.Instance.onGetColorType -= GetColorType;
         }
 
         #endregion Event Subscriptions
@@ -150,7 +155,7 @@ namespace Managers
             _collectableList.TrimExcess();
             print("Merge to player finished");
             PlayerSignals.Instance.onTranslateCameraState?.Invoke(new CameraMiniGameState());
-            UISignals.Instance.onOpenPanel?.Invoke(UIPanels.EndGamePrizePanel);
+            LevelSignals.Instance.onLevelSuccessful?.Invoke();
         }
         // throw sticman from temporary list
 
@@ -164,7 +169,10 @@ namespace Managers
                 ScoreSignals.Instance.onHideScore?.Invoke();
             }
         }
-        
+
+        private void OnChangeColorType(ColorType _colorType) => colorType = _colorType;
+
+        private ColorType GetColorType() => colorType;
         
         private void OnReset()
         {

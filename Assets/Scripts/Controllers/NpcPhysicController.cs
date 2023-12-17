@@ -21,7 +21,7 @@ namespace Assets.Scripts.Controllers
             if(other.CompareTag("Player"))
             {
                 ScoreSignals.Instance.onTotalScoreUpdate(1);
-                Destroy(transform.parent.gameObject);//set active false
+                manager.MeshController.gameObject.SetActive(false);
             }
         }
     }

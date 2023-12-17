@@ -26,6 +26,7 @@ namespace Signals
         public Action<OutlineType> onActivateOutlineTrasition;
         public Action onMergeToPLayer;
         public Action<ColorType> onChangeMatarialColor;
+        public Func<ColorType> onGetColorType;
         public Func<Transform> onGetFirstCollectable;
         public Action<bool, Transform> onAddAfterDroneAnimationDone;
         public Action onGetPlayer;

@@ -7,9 +7,9 @@ namespace Commands
 {
     public class PrizeArrowMoveCommand
     {
-        private readonly Image _arrow;
-        private readonly int _moveAmount;
-        private readonly float _duration;
+        private Image _arrow;
+        private int _moveAmount;
+        private float _duration;
 
         public PrizeArrowMoveCommand(ref Image arrow, ref int moveAmount, ref float duration)
         {

@@ -8,6 +8,7 @@ namespace Enums
         LevelTextPanel,
         PreGamePanel,
         InGamePanel,
+        X2Panel,
         EndGamePrizePanel,
         IdlePanel,
         LoseGamePanel

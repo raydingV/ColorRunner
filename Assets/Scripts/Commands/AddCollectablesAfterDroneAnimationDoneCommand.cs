@@ -34,6 +34,7 @@ namespace Commands
                 _collectable.Add(_tranform);
                 _tempList.TrimExcess();
                 _collectable.TrimExcess();
+                StackSignals.Instance.onSetStackStartSize?.Invoke(1);
                 StackSignals.Instance.onSetScoreControllerPosition?.Invoke(_collectable[0]);
             }
         }

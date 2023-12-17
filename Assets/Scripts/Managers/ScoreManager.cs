@@ -46,6 +46,7 @@ namespace Managers
             ScoreSignals.Instance.currentScore += ReturnCurrentScore;
             ScoreSignals.Instance.totalScore += ReturnTotalScore;
             ScoreSignals.Instance.onHideScore += OnHideScore;
+            ScoreSignals.Instance.onShowScoreIdle += OnShowScore;
             ScoreSignals.Instance.onUpdateScoreAfterDroneArea += OnUpdateScoreAfterDroneArea;
 
             StackSignals.Instance.onSetScoreControllerPosition += OnSetPosition;
@@ -53,6 +54,8 @@ namespace Managers
             
             CoreGameSignals.Instance.onPlay += OnFindFollowTarget;
             CoreGameSignals.Instance.onReset += OnReset;
+            
+            LevelSignals.Instance.onNextLevel += OnNextLevel;
         }
         private void UnSubscribeEvents()
         {
@@ -61,16 +64,24 @@ namespace Managers
             ScoreSignals.Instance.currentScore -= ReturnCurrentScore;
             ScoreSignals.Instance.totalScore -= ReturnTotalScore;
             ScoreSignals.Instance.onHideScore -= OnHideScore;
-            ScoreSignals.Instance.onUpdateScoreAfterDroneArea += OnUpdateScoreAfterDroneArea;
+            ScoreSignals.Instance.onShowScoreIdle -= OnShowScore;
+            ScoreSignals.Instance.onUpdateScoreAfterDroneArea -= OnUpdateScoreAfterDroneArea;
 
             StackSignals.Instance.onSetScoreControllerPosition -= OnSetPosition;
             PlayerSignals.Instance.onPlayerEnterIdleArea -= OnPlayerEnterIdleArea;
             
             CoreGameSignals.Instance.onPlay -= OnFindFollowTarget;
             CoreGameSignals.Instance.onReset -= OnReset;
+
+            LevelSignals.Instance.onNextLevel -= OnNextLevel;
         }
 
         #endregion
+
+        private void Start()
+        {
+            _totalScore = SaveSignals.Instance.onRunnerGameLoad().Score;
+        }
 
         private void Update()
         {
@@ -86,15 +97,8 @@ namespace Managers
 
         private void OnFindFollowTarget()
         {
-            try
-            {
-                _target = StackSignals.Instance.onGetFirstCollectable();
-                _scoreText.text = _currentScore.ToString();
-            }
-            catch
-            {
-                Debug.Log("Player Cant find" , _target);
-            }
+            _target = StackSignals.Instance.onGetFirstCollectable();
+            _scoreText.text = _currentScore.ToString();
         }
 
         private void OnCurrentLevelScoreUpdate(bool increase)
@@ -107,7 +111,7 @@ namespace Managers
         private void OnTotalScoreUpdate(int score)
         {
             _totalScore += score;
-            _scoreText.text = _currentScore.ToString();
+            _scoreText.text = _totalScore.ToString();
             SaveScoreParams();
         }
 
@@ -120,18 +124,12 @@ namespace Managers
         {
             _target = FindObjectOfType<PlayerManager>().transform;
             followOffset = followIdleOffset;
+            _scoreText.text = "";
         }
             
         public void OnUpdateScoreAfterDroneArea()
         {
-            int newScore = _currentScore * 2;
-            _currentScore = newScore;
-            _scoreText.text = newScore.ToString();
-            
-            // for (int i = 0; i < _score; i++) !!write on stackmanager and call from here
-            // {
-            //     StackSignals.Instance.onAddStack?.Invoke(player);
-            // }
+            _scoreText.text = _currentScore.ToString();
         }
 
         private void OnHideScore()
@@ -139,8 +137,12 @@ namespace Managers
             _scoreText.text = "";
         }
 
-        //store total scroe when p;ayer enter drone area
-
+        private void OnShowScore()
+        {
+            _currentScore = 0;
+            _scoreText.text = _totalScore.ToString();
+        }
+        
         private void OnReset()
         {
             _currentScore = 0;
@@ -150,13 +152,18 @@ namespace Managers
         #region refactred when saveManager is added
         private void SaveScoreParams()
         {
-            //conver ejs version
             new ScoreParams() {currentLevelScore = _currentScore, totalScore = _totalScore };
+        }
+
+        private void OnNextLevel()
+        {
+            SaveSignals.Instance.onRunnerSaveData?.Invoke();
         }
         
         private int ReturnCurrentScore() {return _currentScore; }
         
         private int ReturnTotalScore() {return _totalScore; }
+        
         #endregion
     }
 }
