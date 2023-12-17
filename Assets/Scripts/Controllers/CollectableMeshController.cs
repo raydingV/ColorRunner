@@ -38,7 +38,7 @@ namespace Controllers
         private void Awake()
         {
             _material = GetComponent<SkinnedMeshRenderer>().material;
-
+           
         }
 
         private void Start()
@@ -63,11 +63,11 @@ namespace Controllers
 
         public void ActivateOutlineTrasition(OutlineType type)
         {
-            if (type == OutlineType.NonOutline)
+            if(type == OutlineType.NonOutline)
             {
                 _material.DOFloat(0, "_OutlineSize", 1f);
             }
-            else if (type == OutlineType.Outline)
+            else if( type == OutlineType.Outline)
             {
                 _material.DOFloat(100, "_OutlineSize", 1f);
             }

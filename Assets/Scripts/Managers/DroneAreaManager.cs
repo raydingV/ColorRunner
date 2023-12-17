@@ -23,7 +23,7 @@ namespace Managers
         [SerializeField] private MatController matControllerRight;
         [SerializeField] private ColorType rightMatColorType;
         [SerializeField] private DroneController droneController;
-
+        [SerializeField] private bool matLeft, matRight;
         #endregion
 
         #region Private Variables
@@ -87,6 +87,14 @@ namespace Managers
             matControllerLeft.DisableBoxCollider();
             matControllerRight.DisableBoxCollider();
         }
+
+        private void CloseUpMat()
+        {
+            if(!matLeft)
+                matControllerLeft.CloseMat();
+            else if(!matRight)
+                matControllerRight.CloseMat();
+        }
         
         private async void OnLastCollectableEnterDroneArea()
         {
@@ -95,8 +103,11 @@ namespace Managers
             print("outline changed");
             StackSignals.Instance.onActivateOutlineTrasition?.Invoke(OutlineType.NonOutline);
             await Task.Delay(1000);
-            print("Drone started");
+            CloseUpMat();
+            print("MatsAreClosing");
+            await Task.Delay(250);
             droneController.StartDroneAnimation();
+            print("Drone started");
             DisableMatControllersCollider();
         }
     }

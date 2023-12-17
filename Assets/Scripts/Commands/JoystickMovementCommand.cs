@@ -17,8 +17,8 @@ namespace Commands
             float horizontal = _floatingJoystick.Horizontal;
             float vertical = _floatingJoystick.Vertical;
             
-            InputSignals.Instance.onInputParamsUpdate?.Invoke(new InputParameters() {
-                ValueOfX = horizontal, ValueOfY = vertical });
+            InputSignals.Instance.onInputParamsUpdate?.Invoke(new InputParams() {
+                XValue = horizontal, YValue = vertical });
         }
     }
 }

@@ -3,7 +3,6 @@ using Controllers;
 using Enums;
 using Signals;
 using StateMachine;
-using UnityEditor.Animations;
 using UnityEngine;
 
 namespace Managers
@@ -73,7 +72,7 @@ namespace Managers
 
         private void OnTranslateAnimationState(AnimationStateMachine state)
         {
-            if (physicController.CompareTag("Collected"))
+            if(physicController.CompareTag("Collected"))
             {
                 animatorController.TranslateAnimationState(state);
             }
@@ -81,7 +80,7 @@ namespace Managers
 
         private void OnSetCollectableMaterial(Material material)
         {
-            if (physicController.CompareTag("Collected"))
+            if(physicController.CompareTag("Collected"))
             {
                 meshController.SetCollectableMatarial(material);
             }
@@ -98,7 +97,7 @@ namespace Managers
 
         private void OnActivateOutlineTrasition(OutlineType type)
         {
-            if (physicController.CompareTag("Collected"))
+            if(physicController.CompareTag("Collected"))
             {
                 meshController.ActivateOutlineTrasition(type);
             }
@@ -107,7 +106,7 @@ namespace Managers
         public void AddCollectableToStackManager(Transform _transform)
         {
             StackSignals.Instance.onAddStack(_transform);
-            _transform.rotation = new Quaternion(0, 0, 0, 0);
+            _transform.rotation = new Quaternion(0, 0, 0,0);
         }
 
         public void RemoveCollectableFromStackManager(Transform transform)
@@ -123,7 +122,7 @@ namespace Managers
 
         private void OnDroneAnimationComplated()
         {
-            if (_isDead)
+            if(_isDead)
             {
                 OnTranslateAnimationState(new DeathAnimationState());
             }

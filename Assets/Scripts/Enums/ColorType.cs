@@ -14,6 +14,7 @@ namespace Enums
         Orange,
         Purple,
         Blue,
-        Brown
+        Brown,
+        RainBow
     }
 }

@@ -12,11 +12,11 @@ namespace StateMachine
 
         #region Protected Variables
 
-        protected CameraManager? _cameraManager { get; set; }
-        protected Transform? _target { get; set; }
-        protected CinemachineVirtualCamera? _runnerCamera { get; set; }
-        protected CinemachineVirtualCamera? _idleCamera { get; set; }
-        protected Animator? _cinamationAnimationStates { get; set; }
+        protected CameraManager ? _cameraManager { get; set; }
+        protected Transform ? _target { get; set; }
+        protected CinemachineVirtualCamera ? _runnerCamera { get; set; }
+        protected CinemachineVirtualCamera ? _idleCamera { get; set; }
+        protected Animator ? _cinamationAnimationStates{ get; set; }
 
         #endregion
 
@@ -31,6 +31,6 @@ namespace StateMachine
             _cinamationAnimationStates = _cameraManager.StateDrivenCameraAnimator;
         }
 
-        public abstract void ChangerStateCamera();
+        public abstract void ChangeStateCamera();
     }
 }

@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using Controllers;
 using Data.UnityObject;
 using Data.ValueObject;
@@ -10,7 +10,7 @@ using UnityEngine;
 
 namespace Managers
 {
-    public class PlayerManager : MonoBehaviour
+    public class PlayerManager: MonoBehaviour
     {
         #region Variables
         private PlayerData _playerData;
@@ -21,7 +21,7 @@ namespace Managers
         #endregion
 
         #region Event Subsicription
-
+    
         void OnEnable()
         {
             SubscribeEvents();
@@ -40,7 +40,7 @@ namespace Managers
             PlayerSignals.Instance.onPlayerEnterDroneArea += OnPlayerEnterDroneArea;
             PlayerSignals.Instance.onPlayerExitDroneArea += OnPlayerExitDroneArea;
         }
-
+        
         private void UnsubscribeEvents()
         {
             CoreGameSignals.Instance.onPlay -= OnPlay;
@@ -54,14 +54,14 @@ namespace Managers
             PlayerSignals.Instance.onPlayerEnterDroneArea -= OnPlayerEnterDroneArea;
             PlayerSignals.Instance.onPlayerExitDroneArea -= OnPlayerExitDroneArea;
         }
-
+        
         private void OnDisable()
         {
             UnsubscribeEvents();
         }
 
         #endregion
-
+        
         private void Awake()
         {
             _playerData = GetPlayerData();
@@ -69,7 +69,7 @@ namespace Managers
         }
 
         private PlayerData GetPlayerData() => Resources.Load<CD_Player>("Data/CD_Player").Data;
-
+        
         private void SetPlayerDataToControllers()
         {
             playerMovementController.SetMovementData(_playerData.playerMovementData);
@@ -85,25 +85,25 @@ namespace Managers
             playerAnimationController.SetAnimationState(SticmanAnimationType.Run);
             playerMovementController.JoystickPressState(true, false, false);
         }
-
+        
         private void OnInputDragged()
         {
             // playerMovementController.ActivateMovement();
             playerMovementController.JoystickPressState(false, true, false);
         }
-
+        
         private void OnInputReleased()
         {
             playerMovementController.JoystickPressState(false, false, true);
             playerAnimationController.SetAnimationState(SticmanAnimationType.Idle);
-            playerMovementController.SetInputValues(new InputParameters() { ValueOfX = 0, ValueOfY = 0, });
+            playerMovementController.SetInputValues(new InputParams() { XValue = 0, YValue = 0,});
         }
 
-        private void OnInputParamsUpdate(InputParameters inputParams)
+        private void OnInputParamsUpdate(InputParams inputParams)
         {
             playerMovementController.SetInputValues(inputParams);
-        }
-
+        }      
+        
         private void OnJoystickStateChange(JoystickStates joystickState)
         {
             playerMovementController.ChangeMovementType(joystickState);
@@ -123,10 +123,10 @@ namespace Managers
             // transform.position = new Vector3(transform.position.x, Mathf.Lerp(transform.position.y, 25, 25 * Time.deltaTime), transform.position.z);
             // transform.DOMoveY(15, 1f).SetEase(Ease.OutCubic).SetAutoKill();
         }
-
+        
         private void OnChangePlayerGradientColor()
         {
-
+            
         }
 
         private void OnChangePlayerColor(Color color) { playerMeshController.ChangeMaterialColor(color); }
@@ -136,19 +136,19 @@ namespace Managers
         public void DeactivateMovement() { playerMovementController.DeactivateMovement(); }
 
         private void OnPlayerEnterTurretArea()
-        {
+        { 
             _playerData.playerMovementData.RunnerForwardSpeed = 5f;
             SetPlayerDataToControllers();
             playerAnimationController.SetAnimationState(SticmanAnimationType.SneakWalk);
         }
-
-        private void OnPlayerExitTurretArea()
-        {
+        
+        private void OnPlayerExitTurretArea() 
+        { 
             _playerData.playerMovementData.RunnerForwardSpeed = 10f;
             SetPlayerDataToControllers();
             playerAnimationController.SetAnimationState(SticmanAnimationType.Run);
         }
-
+        
         private void OnPlayerEnterDroneArea()
         {
             playerMovementController.DroneAreaMovement(transform);
@@ -158,10 +158,10 @@ namespace Managers
         {
             playerMovementController.ExitDroneAreaMovement();
         }
-
+        
         private void OnReset()
         {
-
+            
         }
     }
 }

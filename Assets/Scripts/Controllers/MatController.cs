@@ -1,5 +1,6 @@
 ﻿using Enums;
 using System.Collections;
+using DG.Tweening;
 using UnityEngine;
 using UnityObject;
 using ValueObject;
@@ -47,6 +48,12 @@ namespace Controllers
         public void DisableBoxCollider()
         {
             _boxCollider.enabled = false;
+        }
+        
+        public void CloseMat()
+        {
+            transform.DOScaleZ(.25f, .5f).OnComplete(() => { transform.DOScaleX(0, .5f).OnComplete(() =>
+            { transform.DOScaleZ(0, .1f);});});
         }
     }
 }

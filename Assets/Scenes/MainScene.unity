@@ -7170,7 +7170,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7b3f6ae344c145c0bb745abc1f3a7eee, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_XPosition: 0
 --- !u!114 &1183177625
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8130,7 +8129,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7b3f6ae344c145c0bb745abc1f3a7eee, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_XPosition: 0
 --- !u!114 &1542302783
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -9712,9 +9710,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 86f1f0c1ce731954c8e5652cbc3f9284, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Data:
-    StageList: []
-  levelHolder: {fileID: 2707297507192890190}
 --- !u!1 &2707297506938656001
 GameObject:
   m_ObjectHideFlags: 0
@@ -9932,15 +9927,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cd2ab6d60985485d97c48e89af5bed12, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Data:
-    HorizontalInputSpeed: 2
-    VerticalInputSpeed: 2
-    ClampSides: {x: -3, y: 3}
-    ClampSpeed: 0.007
-  isReadyForTouch: 0
-  isFirstTimeTouchTaken: 0
-  floatingJoystick: {fileID: 5722263417434374184}
-  currentGameState: 0
 --- !u!4 &2707297507328157843
 Transform:
   m_ObjectHideFlags: 0
@@ -10057,7 +10043,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7b3f6ae344c145c0bb745abc1f3a7eee, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_XPosition: 0
 --- !u!114 &2707297507699669292
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -10070,12 +10055,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 02923f24ee1f2fd49ba1d05b0f876858, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  InitializeCam: {fileID: 1542302783}
-  RunnerCam: {fileID: 2707297507626073441}
-  MiniGameCam: {fileID: 1183177625}
-  IdleCam: {fileID: 2707297508299066787}
-  StateDrivenCameraAnimator: {fileID: 2707297507699669296}
-  Player: {fileID: 0}
 --- !u!114 &2707297507699669293
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -10211,10 +10190,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1a66b2daa0bbd574d8a90fbc43a5e38c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _collectableList: []
-  _tempList: []
-  colorType: 9
-  stickmanPrefab: {fileID: 4703302485167264113, guid: 64f1633875949d449a608f7476afa5a7, type: 3}
 --- !u!1 &2707297507822129244
 GameObject:
   m_ObjectHideFlags: 0
@@ -10690,7 +10665,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   uiPanelController: {fileID: 4470851587710500869}
-  levelPanelController: {fileID: 0}
+  increaceStackSize: 4
+  arrow: {fileID: 1617000324}
+  levelText: {fileID: 166952006}
+  prizeText: {fileID: 2064466917}
+  scoreText: {fileID: 1253537808}
 --- !u!114 &4470851587710500869
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -10703,7 +10682,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f0b6aac24cb15774c96415ca5eb17a20, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  panels: []
+  panels:
+  - {fileID: 722353976}
+  - {fileID: 4470851587080948063}
+  - {fileID: 4470851586939963936}
+  - {fileID: 1670678687}
+  - {fileID: 4470851587192639725}
+  - {fileID: 4470851587883035591}
+  - {fileID: 4470851586428051388}
 --- !u!114 &4470851587710500920
 MonoBehaviour:
   m_ObjectHideFlags: 0

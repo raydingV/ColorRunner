@@ -12,9 +12,9 @@ namespace Commands
         
         public void StopJoystickMovement()
         {
-            InputSignals.Instance.onInputParamsUpdate?.Invoke(new InputParameters()
+            InputSignals.Instance.onInputParamsUpdate?.Invoke(new InputParams()
             {
-                ValueOfX = 0, ValueOfY = 0
+                XValue = 0, YValue = 0
             });
         }
     }

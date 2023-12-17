@@ -40,11 +40,11 @@ namespace Controllers
                 _manager.RemoveCollectableFromStackManager(_manager.transform);
                 other.gameObject.SetActive(false);
             }
-
+            
             if (other.CompareTag("MatTrigger"))
             {
                 StackSignals.Instance.onStackEnterDroneArea?.Invoke(_manager.transform, other.transform);
-
+                
                 if (!_manager.CompareColor(other.GetComponent<MatController>().currentColorType))
                 {
                     _manager.IsDead = true;

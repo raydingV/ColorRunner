@@ -5,7 +5,10 @@ using Signals;
 using DG.Tweening;
 using UnityObject;
 using ValueObject;
+using StateMachine;
 using UnityEngine;
+using Commands;
+using Enums;
 using System.Collections;
 using Controllers;
 
@@ -13,38 +16,52 @@ namespace Managers
 {
     public class StackManager : MonoBehaviour
     {
-        #region SelfVariables
+        #region Self Variables
 
-        #region privateVariables
+        #region Serialize Variables
 
         [SerializeField] List<Transform> _collectable = new List<Transform>();
+        [SerializeField] List<Transform> _tempList = new List<Transform>();
+
+        [SerializeField] private ColorType colorType;
+        [SerializeField] private GameObject stickmanPrefab; 
+        #endregion
+
+        #region private Variables
+
+
         private Transform _playerPossition;
         private Material _playerMat;
         private LerpData _lerpData;
 
-        #endregion
+        private ShakeStackCommand _shakeStakeCommand;
+        private AddStackCommand _addStackCommand;
+        private RemoveStackCommand _removeStackCommand;
+        private StackLerpMoveCommand _stackLerpMoveCommand;
 
         #endregion
 
-        
+        #endregion
 
-        //temp
         private void Awake()
         {
             _playerPossition = GameObject.FindGameObjectWithTag("Player").transform;
-
             _lerpData = GetLerpData();
-            Debug.Log(_lerpData.LerpSpeeds);
+            _shakeStakeCommand = new ShakeStackCommand(ref _collectable, ref _lerpData);
+            _addStackCommand = new AddStackCommand(ref _collectable, ref _shakeStakeCommand, transform, this);
+            _removeStackCommand = new RemoveStackCommand(ref _collectable);
+            _stackLerpMoveCommand = new StackLerpMoveCommand(ref _collectable, ref _lerpData, _playerPossition);
+            OnSetStackStartSize(6);
         }
 
         private void FixedUpdate()
         {
-            OnLerpStackMove();
+            _stackLerpMoveCommand.OnLerpStackMove();
         }
 
         private LerpData GetLerpData() => Resources.Load<CD_Lerp>("Data/CD_Lerp").Data;
 
-        #region Subscriptions
+        #region Event Subscriptions
 
         private void OnEnable()
         {
@@ -53,22 +70,28 @@ namespace Managers
 
         private void Subscribe()
         {
-            StackSignals.Instance.onAddStack += OnAddStack;
-            StackSignals.Instance.OnRemoveFromStack += OnRemoveFromStack;
-            StackSignals.Instance.OnLerpStack += OnLerpStackMove;
-            StackSignals.Instance.OnSetStackStartSize += OnSetStackStartSize;
-            //StackSignals.Instance.OnShakeStackSize += OnShakeStackSize;
-            StackSignals.Instance.OnThrowStackInMiniGame += OnThrowStackInMiniGame;
+            StackSignals.Instance.onAddStack += _addStackCommand.OnAddStack;
+            StackSignals.Instance.onRemoveFromStack += _removeStackCommand.OnRemoveFromStack;
+            StackSignals.Instance.onLerpStack += _stackLerpMoveCommand.OnLerpStackMove;
+            StackSignals.Instance.onSetStackStartSize += OnSetStackStartSize;
+            //StackSignals.Instance.onThrowStackInMiniGame += OnThrowStackInMiniGame;
+            StackSignals.Instance.onStackEnterDroneArea += OnStackEnterDroneArea;
+            StackSignals.Instance.onMergeToPLayer += OnMergeToPLayer;
+            StackSignals.Instance.onAddAfterDroneAnimationDone += OnAddAfterDroneAnimationDone;
+            PlayerSignals.Instance.onChangeAllCollectableColorType += OnChangeAllCollectableColorType;
         }
 
         private void UnSubscribe()
         {
-            StackSignals.Instance.onAddStack -= OnAddStack;
-            StackSignals.Instance.OnRemoveFromStack -= OnRemoveFromStack;
-            StackSignals.Instance.OnLerpStack -= OnLerpStackMove;
-            StackSignals.Instance.OnSetStackStartSize -= OnSetStackStartSize;
-            //StackSignals.Instance.OnShakeStackSize -= OnShakeStackSize;
-            StackSignals.Instance.OnThrowStackInMiniGame -= OnThrowStackInMiniGame;
+            StackSignals.Instance.onAddStack -= _addStackCommand.OnAddStack;
+            StackSignals.Instance.onRemoveFromStack -= _removeStackCommand.OnRemoveFromStack;
+            StackSignals.Instance.onLerpStack -= _stackLerpMoveCommand.OnLerpStackMove;
+            StackSignals.Instance.onSetStackStartSize -= OnSetStackStartSize;
+            //StackSignals.Instance.onThrowStackInMiniGame -= OnThrowStackInMiniGame;
+            StackSignals.Instance.onStackEnterDroneArea -= OnStackEnterDroneArea;
+            StackSignals.Instance.onMergeToPLayer -= OnMergeToPLayer;
+            StackSignals.Instance.onAddAfterDroneAnimationDone -= OnAddAfterDroneAnimationDone;
+            PlayerSignals.Instance.onChangeAllCollectableColorType -= OnChangeAllCollectableColorType;
         }
 
         private void OnDisable()
@@ -78,83 +101,78 @@ namespace Managers
 
         #endregion
 
-       
-        private void OnAddStack(Transform collectable)
+        private void OnChangeAllCollectableColorType(ColorType type)
         {
-            collectable.tag = "Collected";
-            collectable.SetParent(transform);
-            _collectable.Add(collectable);
-            _collectable.TrimExcess();
-            StartCoroutine(OnShakeStackSize());
+            foreach (var item in _collectable)
+            {
+                item.GetComponent<CollectableManager>().ChangeMatarialColor(type);
+            }
         }
 
-        private void OnRemoveFromStack(Transform collectable)
+        private void OnStackEnterDroneArea(Transform collectable, Transform mat)
         {
+            if (!_collectable.Contains(collectable)) return;
+            PlayerSignals.Instance.onTranslateAnimationState(new SneakWalkAnimationState());
+            _tempList.Add(collectable);
             _collectable.Remove(collectable);
             _collectable.TrimExcess();
-        }
+            _tempList.TrimExcess();
+            collectable.DOMove(
+                    new Vector3(mat.position.x, collectable.position.y,
+                        collectable.position.z + UnityEngine.Random.Range(6, 10)), 1.5f)
+                .OnComplete(() => PlayerSignals.Instance.onTranslateAnimationState(new SneakIdleAnimationState()));
 
-        private void OnSetStackStartSize(int size) 
-        {
-        }
-
-        private void OnLerpStackMove() 
-        {
-            
-            if (_collectable.Count > 0)
+            if (_collectable.Count == 0)
             {
-                // note that canbe put inside loop and perfectly fine just iteration number is inrease
-                //put pack to stack behind the player 
-                _collectable[0].localPosition = new Vector3(
-                    Mathf.Lerp(_collectable[0].localPosition.x, _playerPossition.localPosition.x, 10f * Time.deltaTime),
-                    Mathf.Lerp(_collectable[0].localPosition.y, _playerPossition.localPosition.y, 10f * Time.deltaTime),
-                    Mathf.Lerp(_collectable[0].localPosition.z, _playerPossition.localPosition.z - _lerpData.DistanceOffSet, 10f * Time.deltaTime)
-                    );
-
-                //after each stack flow each other by n flow n - 1 prenciple by give offset and time 
-                for(int i = 1; i < _collectable.Count; i++)
-                {
-                    _collectable[i].localPosition = new Vector3(
-                         Mathf.Lerp(_collectable[i].localPosition.x, _collectable[i - 1].localPosition.x, 10f * Time.deltaTime),
-                         Mathf.Lerp(_collectable[i].localPosition.y, _collectable[i - 1].localPosition.y, 100f * Time.deltaTime),
-                         Mathf.Lerp(_collectable[i].localPosition.z, _collectable[i - 1].localPosition.z - _lerpData.DistanceOffSet, 10f * Time.deltaTime)
-                         );
-
-                }
-                
+                StackSignals.Instance.onLastCollectableEnterDroneArea?.Invoke();
             }
         }
 
-        private IEnumerator OnShakeStackSize() 
+        private void OnMergeToPLayer()
         {
+            _tempList = _collectable;
+            _collectable.Clear();
+            _tempList.TrimExcess();
             _collectable.TrimExcess();
 
-            for (int i = 0; i < _collectable.Count; i++)
+            foreach (var stack in _tempList)
             {
-                if (i < 0 || i >= _collectable.Count)
-                {
-                    yield break;
-                }
-                _collectable[i].transform.DOScale(new Vector3(1.5f, 1.5f, 1.5f), 0.12f).SetEase(Ease.Flash);
-                _collectable[i].transform.DOScale(Vector3.one, 0.12f).SetDelay(0.12f).SetEase(Ease.Flash);
+                stack.DOMoveZ(_playerPossition.position.z, 0.4f).OnComplete(() =>
+                    _playerPossition.DOScale(
+                        new Vector3(_playerPossition.localScale.x + 0.0375f, _playerPossition.localScale.y + 0.0375f,
+                            _playerPossition.localScale.z + 0.0375f), 0.3f));
+            }
+        }
 
-                _collectable.TrimExcess();
-                yield return new WaitForSeconds(0.05f);
+        private void OnAddAfterDroneAnimationDone(bool isDead, Transform _tranform)
+        {
+            if (isDead)
+            {
+                _tempList.Remove(_tranform);
+                _tempList.TrimExcess();
             }
 
+            if (!isDead && _tempList.Contains(_tranform))
+            {
+                _tempList.Remove(_tranform);
+                _collectable.Add(_tranform);
+                _tempList.TrimExcess();
+                _collectable.TrimExcess();
+                StackSignals.Instance.onSetScoreControllerPosition?.Invoke(_collectable[0]);
+            }
         }
 
-        private void OnJumpOnJumpPlatform()
+        private void OnSetStackStartSize(int size)
         {
+            for (int i = 0; i < size; i++)
+            {
+                _addStackCommand.OnAddStack(Instantiate(stickmanPrefab).transform);                
+            }
 
-        }
-
-        private void OnThrowStackInMiniGame() 
-        {
-        }
-
-        private void SortStack()
-        {
+            for (int i = 0; i < size; i++)
+            {
+                _collectable[i].GetComponent<CollectableManager>().ChangeMatarialColor(colorType);
+            }
         }
     }
 }

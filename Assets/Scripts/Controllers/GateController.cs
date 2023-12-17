@@ -37,7 +37,7 @@ namespace Controllers
             _material = GetComponent<MeshRenderer>().material;
             GetColorData();
             _material.color = _colorData.Color;
-            _material.SetAlpha(0.5f);
+            // _material.SetAlpha(0.5f);
         }
 
         private void GetColorData() => _colorData = Resources.Load<CD_ColorData>("Data/CD_ColorData").Colors[(int)currentColorType];

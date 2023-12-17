@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using Keys;
 using Signals;
 using UnityEngine;
@@ -25,12 +25,12 @@ namespace Managers
         {
             UnSubscribeEvents();
         }
-
+        
         private void SubscribeEvents()
         {
             ScoreSignals.Instance.onCurrentLevelScoreUpdate += OnCurrentLevelScoreUpdate;
             ScoreSignals.Instance.onTotalScoreUpdate += OnTotalScoreUpdate;
-
+            
             ScoreSignals.Instance.currentScore += ReturnCurrentScore;
             ScoreSignals.Instance.totalScore += ReturnTotalScore;
         }
@@ -38,13 +38,13 @@ namespace Managers
         {
             ScoreSignals.Instance.onCurrentLevelScoreUpdate -= OnCurrentLevelScoreUpdate;
             ScoreSignals.Instance.onTotalScoreUpdate -= OnTotalScoreUpdate;
-
+            
             ScoreSignals.Instance.currentScore -= ReturnCurrentScore;
             ScoreSignals.Instance.totalScore -= ReturnTotalScore;
         }
 
         #endregion
-
+        
         private void OnCurrentLevelScoreUpdate(int score)
         {
             currentScore += score;
@@ -59,11 +59,11 @@ namespace Managers
 
         private void UpdateScoreParams()
         {
-            new ScoreParams() { currentLevelScore = currentScore, totalScore = totalScore };
+            new ScoreParams() {currentLevelScore = currentScore, totalScore = totalScore};
         }
-
-        private int ReturnCurrentScore() { return currentScore; }
-
-        private int ReturnTotalScore() { return totalScore; }
+        
+        private int ReturnCurrentScore() {return currentScore;}
+        
+        private int ReturnTotalScore() {return totalScore;}
     }
 }

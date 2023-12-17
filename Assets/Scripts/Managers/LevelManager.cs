@@ -2,7 +2,7 @@ using System;
 using Controllers;
 using Data.UnityObject;
 using Data.ValueObject;
-using Extentions;
+using Commands;
 using Keys;
 using Signals;
 using UnityEngine;
@@ -21,9 +21,9 @@ namespace Managers
 
         #region Serialized Variables
 
-        [Space][SerializeField] private GameObject levelHolder;
-        [SerializeField] private LevelLoaderCommand levelLoader;
-        [SerializeField] private ClearActiveLevelCommand levelClearer;
+        [Space] [SerializeField] private GameObject levelHolder;
+        [SerializeField] private Commands.LevelLoaderCommand levelLoader;
+        [SerializeField] private Commands.ClearActiveLevelCommand levelClearer;
 
         #endregion
 
@@ -95,7 +95,10 @@ namespace Managers
             _levelID++;
             CoreGameSignals.Instance.onClearActiveLevel?.Invoke();
             CoreGameSignals.Instance.onReset?.Invoke();
-          
+            CoreGameSignals.Instance.onSaveGameData?.Invoke(new SaveGameDataParams()
+            {
+                Level = _levelID
+            });
             CoreGameSignals.Instance.onLevelInitialize?.Invoke();
         }
 
@@ -103,7 +106,10 @@ namespace Managers
         {
             CoreGameSignals.Instance.onClearActiveLevel?.Invoke();
             CoreGameSignals.Instance.onReset?.Invoke();
-        
+            CoreGameSignals.Instance.onSaveGameData?.Invoke(new SaveGameDataParams()
+            {
+                Level = _levelID
+            });
             CoreGameSignals.Instance.onLevelInitialize?.Invoke();
         }
 

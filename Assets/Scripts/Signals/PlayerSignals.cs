@@ -1,11 +1,10 @@
-using System;
+﻿using System;
 using Extentions;
 using UnityEngine;
 using StateMachine;
 using Enums;
 using UnityEngine.Events;
 using UnityEngine.WSA;
-using UnityEditor.Animations;
 
 namespace Signals
 {
@@ -23,6 +22,7 @@ namespace Signals
         public Action onPlayerExitTurretArea;
         public Action<Material> onChangeMaterial;
         public Action<AnimationStateMachine> onTranslateAnimationState;
+        public Action<CameraStateMachine> onTranslateCameraState;
         public Action<ColorType> onChangeAllCollectableColorType;
     }
 }

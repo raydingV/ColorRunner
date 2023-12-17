@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Signals;
 using UnityEngine;
 
 namespace Commands
@@ -22,6 +23,7 @@ namespace Commands
             _collectable.Remove(collectable);
             _collectable.TrimExcess();
             collectable.gameObject.SetActive(false); //after use with pool ?
+            StackSignals.Instance.onSetScoreControllerPosition?.Invoke(_collectable[0]);
         }
     }
 }

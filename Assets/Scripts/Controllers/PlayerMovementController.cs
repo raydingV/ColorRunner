@@ -5,6 +5,9 @@ using Keys;
 using Signals;
 using Unity.Mathematics;
 using UnityEngine;
+using DG.Tweening;
+using Managers;
+
 
 namespace Controllers
 {
@@ -56,7 +59,6 @@ namespace Controllers
                 if (_runnerMovement)
                 {
                     RunnerMove();
-                    
                     if (_isDragged)
                     {
                         RunnerRotate();
@@ -64,7 +66,6 @@ namespace Controllers
                     else if (_isReleased)
                     {
                         RunnerRotateNormal();
-                        print("released");
                     }
                 }
                 else if (_idleMovement)
@@ -131,7 +132,7 @@ namespace Controllers
 
         private void RunnerRotateNormal()
         {
-            transform.rotation = Quaternion.LookRotation(Vector3.forward);
+            transform.rotation = Quaternion.Euler(Vector3.zero);
         }
         
         private void IdleMove()
@@ -149,19 +150,32 @@ namespace Controllers
                     _playerMovementData.IdleTurnSpeed);
             }
         }
-
+        
         private void Stop()
         {
             rigidBody.velocity = Vector3.zero;
             rigidBody.angularVelocity = Vector3.zero;
         }
         
-        public void SetInputValues(InputParameters inputParams)
+        public void SetInputValues(InputParams inputParams)
         {
-            _horizontalInput = inputParams.ValueOfX;
-            _verticalInput = inputParams.ValueOfY;
+            _horizontalInput = inputParams.XValue;
+            _verticalInput = inputParams.YValue;
         }
 
+        public void DroneAreaMovement(Transform _transform)
+        {
+            _transform.DOMoveZ(10, 3f).SetRelative().OnComplete(() =>
+            {
+                _playerMovementData.RunnerForwardSpeed = 0f;
+            });
+        }
+
+        public void ExitDroneAreaMovement()
+        {
+            _playerMovementData.RunnerForwardSpeed = 10f;
+        }
+        
         public void ChangeMovementType(JoystickStates joystickState)
         {
             switch (joystickState)

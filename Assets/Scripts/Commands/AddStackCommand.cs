@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Signals;
 using UnityEngine;
 
 namespace Commands
@@ -28,6 +29,7 @@ namespace Commands
             _collectable.Add(collectable);
             _collectable.TrimExcess();
             _monoBehaviour.StartCoroutine(_command.ShakeStackSize());
+            StackSignals.Instance.onSetScoreControllerPosition?.Invoke(_collectable[0]);
         }
     }
 }

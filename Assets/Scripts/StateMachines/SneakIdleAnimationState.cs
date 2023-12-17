@@ -5,9 +5,15 @@ namespace StateMachine
 {
     public class SneakIdleAnimationState : AnimationStateMachine
     {
+        private bool isPlay;
+        
         public override void ChangeAnimationState()
         {
-            _animator.SetTrigger("SneakIdle");
+            if (!isPlay)
+            {
+                _animator.SetTrigger("SneakIdle");
+                isPlay = true;
+            }
         }
     }
 }

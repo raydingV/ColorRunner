@@ -3,7 +3,6 @@ using System.Collections;
 using Managers;
 using Signals;
 using StateMachine;
-using UnityEditor.Animations;
 using UnityEngine;
 
 namespace Controllers
@@ -49,16 +48,16 @@ namespace Controllers
             UnSubscribe();
         }
         #endregion
-
-
-
+        
+        
+        
         private void Awake()
         {
             _CollectableAnimator = GetComponent<Animator>();
             _CollectableStateMachine = new IdleAnimationState();
             _CollectableStateMachine.SetContext(ref _CollectableAnimator);
             _CollectableStateMachine.ChangeAnimationState();
-
+            
             if (manager.GetComponentInChildren<CollectablePhisicController>().CompareTag("Collected"))
             {
                 TranslateAnimationState(new SneakIdleAnimationState());
@@ -79,7 +78,7 @@ namespace Controllers
                 TranslateAnimationState(new RunnerAnimationState());
             }
         }
-
+        
         private void ActivateParticul()
         {
 

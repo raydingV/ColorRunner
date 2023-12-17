@@ -1,16 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace StateMachine
+﻿namespace StateMachine
 {
     public class CameraIdleState : CameraStateMachine
     {
-        public override void ChangerStateCamera()
+        public override void ChangeStateCamera()
         {
-            _runnerCamera.Follow = _target;
+            _idleCamera.Follow = _target;
             _cinamationAnimationStates.Play("IdleCam");
         }
     }
