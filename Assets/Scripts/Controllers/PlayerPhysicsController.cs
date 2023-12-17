@@ -15,10 +15,9 @@ namespace Controllers
 
         private void OnTriggerEnter(Collider other)
         {
-            #region Runner Area
             if(other.CompareTag("Ramp"))
             {
-                manager.JumpPlayerOnRamp();
+                // manager.JumpPlayerOnRamp();
                 other.gameObject.GetComponent<Collider>().enabled = false;
             }
 
@@ -31,15 +30,19 @@ namespace Controllers
             
             if(other.CompareTag("DroneArea")) // change name Drone Area
             {
-                //manager.DeactivateMovement();
-                // PlayerSignals.Instance.onPlayerEnterDroneArea?.Invoke();
-                manager.OnPlayerEnterDroneArea();
+                PlayerSignals.Instance.onPlayerEnterDroneArea?.Invoke();
                 ScoreSignals.Instance.onHideScore?.Invoke();
+            }
+
+            if (other.CompareTag("ExitDroneArea"))
+            {
+                PlayerSignals.Instance.onPlayerExitDroneArea?.Invoke();
             }
 
             if (other.CompareTag("TurretArea"))
             {
                 PlayerSignals.Instance.onPlayerEnterTurretArea?.Invoke();
+                manager.ChangeForwardSpeed(PlayerSpeedState.EnterTurretArea);
             }
            
             if(other.CompareTag("IdleTrigger"))
@@ -53,35 +56,13 @@ namespace Controllers
             {
                 PlayerSignals.Instance.onPlayerExitTurretArea?.Invoke();
             }
-            
-            #endregion
-
-            #region Idle Area
-            // if (other.CompareTag("MainBuilding") || other.CompareTag("SideBuilding"))
-            // {
-            //     string nameOfBuilding = other.GetComponentInParent<UmutBuildingManager>().gameObject.name;
-            //     IdleSignals.Instance.onPlayerEnterBuildingArea?.Invoke(nameOfBuilding, other.name);
-            // }
-            #endregion
         }
         private void OnTriggerExit(Collider other)
         {
-            #region Runner Area
-            if (other.CompareTag("DroneArea"))
+            if (other.CompareTag("ExitTurretArea"))
             {
-                // PlayerSignals.Instance.onPlayerExitDroneArea?.Invoke();
-                // manager.OnPlayerExitDroneArea();
+                manager.ChangeForwardSpeed(PlayerSpeedState.Normal);
             }
-            
-            #endregion
-
-            #region Idle Area
-            // if (other.CompareTag("MainBuilding") || other.CompareTag("SideBuilding"))
-            // {
-            //     string nameOfBuilding = other.GetComponentInParent<UmutBuildingManager>().gameObject.name;
-            //     IdleSignals.Instance.onPlayerExitBuildingArea?.Invoke(nameOfBuilding, other.name);
-            // }
-            #endregion
         }
 
         private void OnTriggerStay(Collider other)

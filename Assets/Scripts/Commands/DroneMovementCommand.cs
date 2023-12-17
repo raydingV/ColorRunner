@@ -35,8 +35,7 @@ namespace Commands
                 _sequence.SetDelay(_delay);
                 _sequence.OnComplete(() =>
                 {
-                    StackSignals.Instance.onDroneAnimationComplated?.Invoke();
-                    PlayerSignals.Instance.onDroneAnimationComplated?.Invoke();
+                    RunnerSignals.Instance.onDroneAnimationComplated?.Invoke();
                     ScoreSignals.Instance.onUpdateScoreAfterDroneArea?.Invoke();
                 });
             }

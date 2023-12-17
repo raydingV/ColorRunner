@@ -57,7 +57,10 @@ namespace Controllers
             _CollectableStateMachine = new IdleAnimationState();
             _CollectableStateMachine.SetContext(ref _CollectableAnimator);
             _CollectableStateMachine.ChangeAnimationState();
-            
+        }
+
+        private void Start()
+        {
             if (manager.GetComponentInChildren<CollectablePhisicController>().CompareTag("Collected"))
             {
                 TranslateAnimationState(new SneakIdleAnimationState());

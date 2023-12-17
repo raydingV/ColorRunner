@@ -27,29 +27,7 @@ namespace Managers
         #endregion
 
         #endregion
-        #region Subscriptions
-
-        private void OnEnable()
-        {
-            Subscribe();
-        }
-
-        private void Subscribe()
-        {
-            PlayerSignals.Instance.onTranslateCameraState += onTranslateCameraState;
-        }
-
-        private void UnSubscribe()
-        {
-            PlayerSignals.Instance.onTranslateCameraState += onTranslateCameraState;
-        }
-
-        private void OnDisable()
-        {
-            UnSubscribe();
-        }
-        #endregion
-
+        
         private void Awake()
         {
             RunnerCam = transform.GetChild(0).GetComponent<CinemachineVirtualCamera>();
@@ -60,8 +38,41 @@ namespace Managers
             //_state.SetContext(this);
             //_state.ChangeStateCamera();
             onTranslateCameraState(new CameraRunnerState());
-
         }
+        
+        #region Subscriptions
+
+        private void OnEnable()
+        {
+            Subscribe();
+        }
+
+        private void Subscribe()
+        {
+            PlayerSignals.Instance.onTranslateCameraState += onTranslateCameraState;
+            PlayerSignals.Instance.onPlayerEnterDroneArea += OnPlayerEnterDroneArea;
+            RunnerSignals.Instance.onDroneAnimationComplated += OnDroneAnimationComplated;
+        }
+
+        private void UnSubscribe()
+        {
+            PlayerSignals.Instance.onTranslateCameraState -= onTranslateCameraState;
+            PlayerSignals.Instance.onPlayerEnterDroneArea -= OnPlayerEnterDroneArea;
+            RunnerSignals.Instance.onDroneAnimationComplated -= OnDroneAnimationComplated;
+        }
+
+        private void OnDisable()
+        {
+            UnSubscribe();
+        }
+        #endregion
+
+        private void OnPlayerEnterDroneArea() => RunnerCam.Follow = null;
+
+
+        private void OnDroneAnimationComplated() => RunnerCam.Follow = Player;
+
+
 
         private void onTranslateCameraState(CameraStateMachine state)
         {

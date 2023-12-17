@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using ValueObject;
 
@@ -10,7 +6,6 @@ namespace Commands
 {
     public class StackLerpMoveCommand
     {
-
         private List<Transform> _collectable;
         private LerpData _lerpData;
         private Transform _playerPossition;
@@ -26,8 +21,8 @@ namespace Commands
         {
             if (_collectable.Count > 0)
             {
-                // note that canbe put inside loop and perfectly fine just iteration number is inrease
-                //put pack to stack behind the player 
+                //note that canbe put inside loop and perfectly fine just iteration number is inrease
+                //put pack to stack behind the player
                 _collectable[0].localPosition = new Vector3(
                     Mathf.Lerp(_collectable[0].localPosition.x, _playerPossition.localPosition.x,
                         _lerpData.LerpSpeeds.x * Time.deltaTime),
@@ -38,7 +33,7 @@ namespace Commands
                 );
                 _collectable[0].LookAt(_playerPossition);
 
-                //after each stack flow each other by n flow n - 1 prenciple by give offset and time 
+                //after each stack flow each other by n flow n - 1 prenciple by give offset and time
                 for (int i = 1; i < _collectable.Count; i++)
                 {
                     _collectable[i].localPosition = new Vector3(

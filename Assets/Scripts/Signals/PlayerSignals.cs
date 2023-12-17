@@ -16,10 +16,13 @@ namespace Signals
         }
 
         public Func<float> onPlayerRotate;
-        // public Action onPlayerEnterDroneArea;
-        public Action onDroneAnimationComplated;
+        
+        public Action onPlayerEnterDroneArea;
+        public Action onPlayerExitDroneArea;
+        
         public Action onPlayerEnterTurretArea;
         public Action onPlayerExitTurretArea;
+        
         public Action<Material> onChangeMaterial;
         public Action<AnimationStateMachine> onTranslateAnimationState;
         public Action<CameraStateMachine> onTranslateCameraState;

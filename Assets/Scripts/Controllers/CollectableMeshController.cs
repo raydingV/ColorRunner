@@ -1,11 +1,9 @@
-﻿using System.Collections;
-using Managers;
-using MK.Toon;
-using DG.Tweening;
+﻿using DG.Tweening;
 using Enums;
+using Managers;
+using UnityEngine;
 using UnityObject;
 using ValueObject;
-using UnityEngine;
 
 namespace Controllers
 {
@@ -17,59 +15,57 @@ namespace Controllers
 
         private ColorData _colorData;
 
-        #endregion
+        #endregion Private Variavles
 
         #region Serialize Variavles
 
-        [SerializeField] CollectableManager manager;
+        [SerializeField] private CollectableManager manager;
 
-        #endregion
-
+        #endregion Serialize Variavles
 
         #region Public Variables
 
-        public Material _material;
+        public Material Material;
 
+        #endregion Public Variables
 
-        #endregion
-
-        #endregion
+        #endregion SelfVariables
 
         private void Awake()
         {
-            _material = GetComponent<SkinnedMeshRenderer>().material;
-           
+            Material = GetComponent<SkinnedMeshRenderer>().material;
         }
 
         private void Start()
         {
             GetColorData();
-            _material.color = _colorData.Color;
+            Material.color = _colorData.Color;
         }
 
         public void ChangeMatarialColor()
         {
-
             GetColorData();
-            _material.color = _colorData.Color;
+            Material.color = _colorData.Color;
         }
 
         private void GetColorData() => _colorData = Resources.Load<CD_ColorData>("Data/CD_ColorData").Colors[(int)manager.currentColorType];
 
         public void SetCollectableMatarial(Material material)
         {
-            _material.color = material.color;
+            Material.color = material.color;
         }
 
         public void ActivateOutlineTrasition(OutlineType type)
         {
-            if(type == OutlineType.NonOutline)
+            if (type == OutlineType.NonOutline)
             {
-                _material.DOFloat(0, "_OutlineSize", 1f);
+                Material.DOFloat(0, "_OutlineSize", 1f);
+                return;
             }
-            else if( type == OutlineType.Outline)
+            else if (type == OutlineType.Outline)
             {
-                _material.DOFloat(100, "_OutlineSize", 1f);
+                Material.DOFloat(100, "_OutlineSize", 1f);
+                return;
             }
         }
     }

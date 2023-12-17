@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Controllers;
 using Data.UnityObject;
 using Data.ValueObject;
@@ -12,14 +13,40 @@ namespace Managers
 {
     public class PlayerManager: MonoBehaviour
     {
-        #region Variables
-        private PlayerData _playerData;
-        [SerializeField] private PlayerMovementController playerMovementController;
-        [SerializeField] private PlayerPhysicsController playerPhysicsController;
-        [SerializeField] private PlayerMeshController playerMeshController;
-        [SerializeField] private PlayerAnimationController playerAnimationController;
-        #endregion
+        #region Self Variables
 
+        #region Public Variables
+
+        
+
+        #endregion Public Variables
+
+        #region Seriliazed Field
+
+        [SerializeField] private PlayerMovementController movementController;
+        [SerializeField] private PlayerPhysicsController physicsController;
+        [SerializeField] private PlayerMeshController meshController;
+        [SerializeField] private PlayerAnimationController animationController;
+
+        #endregion Seriliazed Field
+
+        #region Private
+        
+        private PlayerData _playerData;
+        private Vector3 exitDroneAreaPosition;
+        
+        #endregion Private
+
+        #endregion Self Variables
+
+        private void Awake()
+        {
+            _playerData = GetPlayerData();
+            SetPlayerDataToControllers();
+        }
+        
+        private PlayerData GetPlayerData() => Resources.Load<CD_Player>("Data/CD_Player").Data;
+        
         #region Event Subsicription
     
         void OnEnable()
@@ -30,138 +57,124 @@ namespace Managers
         private void SubscribeEvents()
         {
             CoreGameSignals.Instance.onPlay += OnPlay;
-            InputSignals.Instance.onPointerDown += OnPointerDown;
-            InputSignals.Instance.onPointerDragged += OnInputDragged;
-            InputSignals.Instance.onPointerReleased += OnInputReleased;
-            InputSignals.Instance.onInputParamsUpdate += OnInputParamsUpdate;
-            InputSignals.Instance.onJoystickStateChange += OnJoystickStateChange;
+            CoreGameSignals.Instance.onChangeGameState += OnGameStateChange;
+            
+            InputSignals.Instance.onInputTaken += OnPointerDown;
+            InputSignals.Instance.onInputReleased += OnInputReleased;
+            
+            InputSignals.Instance.onInputDragged += OnInputDragged;
+            InputSignals.Instance.onJoystickDragged += OnJoystickDragged;
+            
+            PlayerSignals.Instance.onPlayerEnterDroneArea += OnPlayerEnterDroneArea;
+            PlayerSignals.Instance.onPlayerExitDroneArea += OnPlayerExitDroneArea;
             PlayerSignals.Instance.onPlayerEnterTurretArea += OnPlayerEnterTurretArea;
             PlayerSignals.Instance.onPlayerExitTurretArea += OnPlayerExitTurretArea;
-            // PlayerSignals.Instance.onPlayerEnterDroneArea += OnPlayerEnterDroneArea;
-            PlayerSignals.Instance.onDroneAnimationComplated += OnDroneAnimationComplated;
+            RunnerSignals.Instance.onDroneAnimationComplated += OnDroneAnimationComplated;
+
         }
         
         private void UnsubscribeEvents()
         {
             CoreGameSignals.Instance.onPlay -= OnPlay;
-            InputSignals.Instance.onPointerDown -= OnPointerDown;
-            InputSignals.Instance.onPointerDragged -= OnInputDragged;
-            InputSignals.Instance.onPointerReleased -= OnInputReleased;
-            InputSignals.Instance.onInputParamsUpdate -= OnInputParamsUpdate;
-            InputSignals.Instance.onJoystickStateChange -= OnJoystickStateChange;
+            CoreGameSignals.Instance.onChangeGameState -= OnGameStateChange;
+            
+            InputSignals.Instance.onInputTaken -= OnPointerDown;
+            InputSignals.Instance.onInputReleased -= OnInputReleased;
+            InputSignals.Instance.onInputDragged -= OnInputDragged;
+            InputSignals.Instance.onJoystickDragged -= OnJoystickDragged;
+
+            PlayerSignals.Instance.onPlayerEnterDroneArea -= OnPlayerEnterDroneArea;
+            PlayerSignals.Instance.onPlayerExitDroneArea -= OnPlayerExitDroneArea;
             PlayerSignals.Instance.onPlayerEnterTurretArea -= OnPlayerEnterTurretArea;
             PlayerSignals.Instance.onPlayerExitTurretArea -= OnPlayerExitTurretArea;
-            // PlayerSignals.Instance.onPlayerEnterDroneArea -= OnPlayerEnterDroneArea;
-            PlayerSignals.Instance.onDroneAnimationComplated -= OnDroneAnimationComplated;
+            RunnerSignals.Instance.onDroneAnimationComplated -= OnDroneAnimationComplated;
         }
         
         private void OnDisable()
         {
             UnsubscribeEvents();
         }
-
         #endregion
         
-        private void Awake()
-        {
-            _playerData = GetPlayerData();
-            SetPlayerDataToControllers();
-        }
-
-        private PlayerData GetPlayerData() => Resources.Load<CD_Player>("Data/CD_Player").Data;
         
         private void SetPlayerDataToControllers()
         {
-            playerMovementController.SetMovementData(_playerData.playerMovementData);
+            movementController.SetMovementData(_playerData.playerMovementData);
         }
 
         private void OnPlay()
         {
-            playerMovementController.ActivateMovement();
+            movementController.IsReadyToPlay(true);
+            // _playerData.playerMovementData.RunnerForwardSpeed = 5;
         }
-
+            
+        private void OnFailed() => movementController.IsReadyToPlay(false);
+        
         private void OnPointerDown()
         {
-            playerAnimationController.SetAnimationState(SticmanAnimationType.Run);
-            playerMovementController.JoystickPressState(true, false, false);
-        }
-        
-        private void OnInputDragged()
-        {
-            // playerMovementController.ActivateMovement();
-            playerMovementController.JoystickPressState(false, true, false);
+            ActivateMovement();
+            // animationController.SetAnimationState(SticmanAnimationType.Run);
         }
         
         private void OnInputReleased()
         {
-            playerMovementController.JoystickPressState(false, false, true);
-            playerAnimationController.SetAnimationState(SticmanAnimationType.Idle);
-            playerMovementController.SetInputValues(new InputParameters() { ValueOfX = 0, ValueOfY = 0,});
+            DeactivateMovement();
+            // animationController.SetAnimationState(SticmanAnimationType.Idle);
         }
-
-        private void OnInputParamsUpdate(InputParameters inputParams)
-        {
-            playerMovementController.SetInputValues(inputParams);
-        }      
+        private void OnInputDragged(RunnerInputParams inputParams) =>  movementController.UpdateRunnerInputValue(inputParams);
         
-        private void OnJoystickStateChange(JoystickStates joystickState)
-        {
-            playerMovementController.ChangeMovementType(joystickState);
-            switch (joystickState)
-            {
-                case JoystickStates.Runner:
-                    playerAnimationController.SetAnimationState(SticmanAnimationType.Run);
-                    break;
-                case JoystickStates.Idle:
-                    playerAnimationController.SetAnimationState(SticmanAnimationType.Idle);
-                    break;
-            }
-        }
+        private void OnJoystickDragged(IdleInputParams inputParams)  => movementController.UpdateIdleInputValue(inputParams);
+   
 
-        public void JumpPlayerOnRamp()
+        private void OnGameStateChange(GameStates gameState) => movementController.ChangeGameStates(gameState);
+    
+        public void StopVerticalMovement() => movementController.StopVerticalMovement();
+        
+        private void OnChangePlayerColor(Color color) { meshController.ChangeMaterialColor(color); }
+
+        private void ActivateMovement() { movementController.ActivateMovement(); }
+
+        public void DeactivateMovement() { movementController.DeactivateMovement(); }
+
+
+
+        private void OnPlayerEnterDroneArea()
         {
-            // transform.position = new Vector3(transform.position.x, Mathf.Lerp(transform.position.y, 25, 25 * Time.deltaTime), transform.position.z);
-            // transform.DOMoveY(15, 1f).SetEase(Ease.OutCubic).SetAutoKill();
+            ChangeForwardSpeed(PlayerSpeedState.EnterDroneArea);
         }
         
-        private void OnChangePlayerGradientColor()
+        private void OnPlayerExitDroneArea()
         {
-            
+            exitDroneAreaPosition = transform.position;
+            StopVerticalMovement();
+            ChangeForwardSpeed(PlayerSpeedState.Stop);
         }
-
-        private void OnChangePlayerColor(Color color) { playerMeshController.ChangeMaterialColor(color); }
-
-        private void ActivateMovement() { playerMovementController.ActivateMovement(); }
-
-        public void DeactivateMovement() { playerMovementController.DeactivateMovement(); }
-
+        
+        private void OnDroneAnimationComplated()
+        {
+            StartVerticalMovement(exitDroneAreaPosition);
+        }
+        
         private void OnPlayerEnterTurretArea()
-        { 
-            _playerData.playerMovementData.RunnerForwardSpeed = 5f;
-            SetPlayerDataToControllers();
-            playerAnimationController.SetAnimationState(SticmanAnimationType.SneakWalk);
+        {
+            animationController.SetAnimationState(SticmanAnimationType.SneakWalk); // Collected stickmans dinleyecek
+            ChangeForwardSpeed(PlayerSpeedState.EnterTurretArea);
         }
         
         private void OnPlayerExitTurretArea() 
         { 
-            _playerData.playerMovementData.RunnerForwardSpeed = 10f;
-            SetPlayerDataToControllers();
-            playerAnimationController.SetAnimationState(SticmanAnimationType.Run);
-        }
-        
-        public void OnPlayerEnterDroneArea()
-        {
-            playerMovementController.DroneAreaMovement(transform);
+            animationController.SetAnimationState(SticmanAnimationType.Run); // Collected stickmans dinleyecek
+            ChangeForwardSpeed(PlayerSpeedState.Normal);
         }
 
-        public void OnDroneAnimationComplated()
-        {
-            playerMovementController.ExitDroneAreaMovement();
-        }
+        public void StartVerticalMovement(Vector3 exitPosition) => movementController.OnStartVerticalMovement(exitPosition);
+        public void ChangeForwardSpeed(PlayerSpeedState changeSpeedState) => movementController.ChangeVerticalSpeed(changeSpeedState);
         
         private void OnReset()
         {
-            
+            Debug.Log("MovementReset");
+            movementController.MovementReset();
+            gameObject.SetActive(true);
         }
     }
 }

@@ -30,6 +30,12 @@ namespace Managers
         
         #endregion
         #endregion
+        
+        private void Awake()
+        {
+            Init();
+            SendColorTypeToMats();
+        }
 
         #region Event Subscription
 
@@ -55,14 +61,14 @@ namespace Managers
 
         #endregion
         
-        private void Awake()
-        {
-            SendColorTypeToMats();
-        }
-
         private void Start()
         {
             SetColorOfMats();
+        }
+
+        private void Init()
+        {
+            
         }
 
         #region SetMatsColors
@@ -103,12 +109,12 @@ namespace Managers
             print("outline changed");
             StackSignals.Instance.onActivateOutlineTrasition?.Invoke(OutlineType.NonOutline);
             await Task.Delay(1000);
+            DisableMatControllersCollider();
             CloseUpMat();
             print("MatsAreClosing");
             await Task.Delay(250);
             droneController.StartDroneAnimation();
             print("Drone started");
-            DisableMatControllersCollider();
         }
     }
 }

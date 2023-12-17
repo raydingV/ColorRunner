@@ -1,81 +1,77 @@
-﻿using System;
-using Data.ValueObject;
+using System;
 using Enums;
 using Keys;
 using Signals;
-using Unity.Mathematics;
 using UnityEngine;
 using DG.Tweening;
-using Managers;
-
 
 namespace Controllers
 {
     public class PlayerMovementController : MonoBehaviour
     {
-        [SerializeField] private Rigidbody rigidBody;
+        #region Self Variables
 
-        private PlayerMovementData _playerMovementData;
-        private float _horizontalInput;
-        private float _verticalInput;
-        private bool _isReadyToMove;
-        private bool _runnerMovement;
-        private bool _idleMovement;
-        private bool _isPressed, _isDragged, _isReleased;
-
-        #region EventSubscription
-
-        private void OnEnable()
-        {
-            SubscribeEvents();
-        }
-
-        private void OnDisable()
-        {
-            UnSubscribeEvents();
-        }
-
-        private void SubscribeEvents()
-        {
-            PlayerSignals.Instance.onPlayerRotate += OnPlayerRotate;
-        }
+        #region Public
         
-        private void UnSubscribeEvents()
-        {
-            PlayerSignals.Instance.onPlayerRotate -= OnPlayerRotate;
-        }
+        #endregion
+
+        #region Serialized
+
+        [SerializeField] private Rigidbody rigidBody;
+        [SerializeField] private GameStates currentGameState;
+        
+        #endregion
+
+        #region Private
+
+        private PlayerMovementData _movementData;
+        private bool _isReadyToMove, _isReadyToPlay, _isMovingVertical;
+        private float _inputValueX;
+        private Vector2 _clampValues;
+        private Vector3 _movementDirection;
+        private PlayerSpeedState _speedState;
 
         #endregion
         
-        public void SetMovementData(PlayerMovementData movementData)
+        #endregion
+        
+        public void SetMovementData(PlayerMovementData movementData) => _movementData = movementData;
+        public void ActivateMovement() => _isReadyToMove = true;
+        public void DeactivateMovement() => _isReadyToMove = false;
+
+        public void UpdateRunnerInputValue(RunnerInputParams inputParam)
         {
-            _playerMovementData = movementData;
+            _inputValueX = inputParam.XValue;
+            _clampValues = inputParam.ClampValues;
         }
+        public void UpdateIdleInputValue(IdleInputParams inputParam) => _movementDirection = inputParam.joystickMovement;
+        public void IsReadyToPlay(bool state) => _isReadyToPlay = state;
+        public void ChangeGameStates(GameStates currentState) => currentGameState = currentState;
 
         private void FixedUpdate()
         {
-            if (_isReadyToMove)
+            Debug.Log("_isReadyToPlay="+_isReadyToPlay+ "_isReadyToMove=" + _isReadyToMove);
+            
+            if (_isReadyToPlay)
             {
-                if (_runnerMovement)
+                if (_isReadyToMove)
                 {
-                    RunnerMove();
-                    if (_isDragged)
+                    if (currentGameState == GameStates.Runner)
                     {
-                        RunnerRotate();
+                        RunnerMove();
                     }
-                    else if (_isReleased)
-                    {
-                        RunnerRotateNormal();
-                    }
-                }
-                else if (_idleMovement)
-                {
-                    if (_isDragged)
+                    else if (currentGameState == GameStates.Idle)
                     {
                         IdleMove();
-                        IdleRotate();
                     }
-                    else if (_isReleased)
+                }
+                else
+                {
+                    if (currentGameState == GameStates.Runner)
+                    {
+                        RunnerStopSideways();
+                    }
+                    else if (currentGameState == GameStates.Idle)
                     {
                         Stop();
                     }
@@ -84,113 +80,80 @@ namespace Controllers
             else
                 Stop();
         }
-
-        public void ActivateMovement()
-        {
-            _isReadyToMove = true;
-        }
-
-        public void DeactivateMovement()
-        {
-            _isReadyToMove = false;
-        }
-
-        public void JoystickPressState(bool isPressed, bool isDragged, bool isReleased)
-        {
-            _isPressed = isPressed;
-            _isDragged = isDragged;
-            _isReleased = isReleased;
-        }
         
         private void RunnerMove()
         {
-            rigidBody.velocity = new Vector3(_horizontalInput * _playerMovementData.RunnerSidewaySpeed, rigidBody.velocity.y,
-                _playerMovementData.RunnerForwardSpeed);
+            Vector3 velocity = rigidBody.velocity;
+            velocity = new Vector3(_inputValueX * _movementData.RunnerSidewaySpeed, velocity.y,
+                _movementData.RunnerForwardSpeed);
+            rigidBody.velocity = velocity;
             Clamp();
+            rigidBody.angularVelocity = Vector3.zero;   // Gecici cozum
         }
 
         private void Clamp()
         {
-            var pos = transform.position;
-            pos.x =  Mathf.Clamp(transform.position.x, _playerMovementData.ClampValues.x, _playerMovementData.ClampValues.y);
-            transform.position = pos;
-        }
-
-        private void RunnerRotate()
-        {
-            Vector3 direction = Vector3.forward + Vector3.right * Mathf.Clamp(_horizontalInput,
-                -_playerMovementData.RunnerMaxRotateAngle, _playerMovementData.RunnerMaxRotateAngle);
-            
-            transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.LookRotation(direction),
-                _playerMovementData.RunnerTurnSpeed);
-        }
-
-        private float OnPlayerRotate()
-        {
-            return transform.rotation.y;
-        }
-
-        private void RunnerRotateNormal()
-        {
-            transform.rotation = Quaternion.Euler(Vector3.zero);
+            Vector3 position = rigidBody.position;
+            position = new Vector3(Mathf.Clamp(rigidBody.position.x, _movementData.ClampValues.x, _movementData.ClampValues.y),
+                position.y, position.z);
+         
+            rigidBody.position = position;
         }
         
         private void IdleMove()
         {
-            rigidBody.velocity = new Vector3(_horizontalInput * _playerMovementData.IdleSpeed, rigidBody.velocity.y,
-                 _verticalInput * _playerMovementData.IdleSpeed);
-        }
+            Vector3 velocity = rigidBody.velocity;
+            velocity = new Vector3(_movementDirection.x * _movementData.IdleSpeed, velocity.y,
+                _movementDirection.z * _movementData.IdleSpeed);
+            rigidBody.velocity = velocity;
 
-        private void IdleRotate()
-        {
-            if (_verticalInput != 0 || _horizontalInput != 0)
+            if (_movementDirection != Vector3.zero)
             {
-                Vector3 direction = Vector3.forward * _verticalInput + Vector3.right * _horizontalInput;
-                transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.LookRotation(direction),
-                    _playerMovementData.IdleTurnSpeed);
+                Quaternion toRotation = Quaternion.LookRotation(_movementDirection);
+                transform.rotation = toRotation;
             }
         }
-        
+        private void RunnerStopSideways()
+        {
+            rigidBody.velocity = new Vector3(0, rigidBody.velocity.y, _movementData.RunnerForwardSpeed);
+        }
+
         private void Stop()
         {
             rigidBody.velocity = Vector3.zero;
+            
             rigidBody.angularVelocity = Vector3.zero;
         }
-        
-        public void SetInputValues(InputParameters inputParams)
+        public void StopVerticalMovement()
         {
-            _horizontalInput = inputParams.ValueOfX;
-            _verticalInput = inputParams.ValueOfY;
+            ChangeVerticalSpeed(PlayerSpeedState.Stop);
+
+            rigidBody.angularVelocity = Vector3.zero;
         }
 
-        public void DroneAreaMovement(Transform _transform)
+        public void OnStartVerticalMovement(Vector3 exitPosition)
         {
-            _transform.DOMoveZ(10, 3f).SetRelative().OnComplete(() =>
-            {
-                _playerMovementData.RunnerForwardSpeed = 0f;
-                _playerMovementData.RunnerSidewaySpeed = 0f;
-            });
+            Vector3 setXPosition = new Vector3(exitPosition.x, transform.position.y, transform.position.z);
+            transform.position = setXPosition;
+            
+            transform.DOMoveZ(8, .5f).SetRelative(true).SetEase(Ease.OutSine)
+                .OnComplete(() => { ChangeVerticalSpeed(PlayerSpeedState.Normal);});
         }
 
-        public void ExitDroneAreaMovement()
+        public void ChangeVerticalSpeed(PlayerSpeedState changeSpeedState)
         {
-            _playerMovementData.RunnerForwardSpeed = 10f;
-            _playerMovementData.RunnerSidewaySpeed = 10f;
+            _movementData.RunnerForwardSpeed = (int)changeSpeedState;
+
+            _speedState = changeSpeedState;
         }
-        
-        public void ChangeMovementType(JoystickStates joystickState)
+
+        public  void MovementReset()
         {
-            switch (joystickState)
-            {
-                case JoystickStates.Runner:
-                    _runnerMovement = true;
-                    _idleMovement = false;
-                    break;
-                case JoystickStates.Idle:
-                    _runnerMovement = false;
-                    _idleMovement = true;
-                    break;
-            }
+            Stop();
+            _isReadyToPlay = false;
+            _isReadyToMove = false;
+            transform.position = Vector3.zero;
+            transform.rotation = Quaternion.identity;
         }
     }
 }
