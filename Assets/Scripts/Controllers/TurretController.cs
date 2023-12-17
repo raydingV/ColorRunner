@@ -62,14 +62,23 @@ namespace Controllers
             }
         }
         
-        public async void Aim(Transform target)
+        public void Aim(Transform target)
         {
             if (!_canShoot) return;
-
-            await Task.Delay(200);
             
             _isAiming = true;
-            turret.transform.DOLookAt(target.position, turnSpeed).SetDelay(turnDelay * 1.66f).OnComplete(() =>
+            turret.transform.DOLookAt(target.position, turnSpeed).SetDelay(turnDelay).OnComplete(() =>
+            {
+                fireParticle.Play();
+            });
+        }
+
+        public void Shoot(Transform target)
+        {
+            if (!_canShoot) return;
+            
+            _isAiming = true;
+            turret.transform.DOLookAt(target.position, turnSpeed).SetDelay(turnDelay).OnComplete(() =>
             {
                 fireParticle.Play();
                 StackSignals.Instance.onRemoveFromStack?.Invoke(target);

@@ -1,6 +1,7 @@
 ﻿using System;
 using Managers;
 using Signals;
+using StateMachine;
 using UnityEngine;
 
 namespace Controllers
@@ -44,7 +45,6 @@ namespace Controllers
             if (other.CompareTag("MatTrigger"))
             {
                 StackSignals.Instance.onStackEnterDroneArea?.Invoke(_manager.transform, other.transform);
-                
                 if (!_manager.CompareColor(other.GetComponent<MatController>().currentColorType))
                 {
                     _manager.IsDead = true;
@@ -58,6 +58,19 @@ namespace Controllers
                     StackSignals.Instance.onWrongTurretMatAreaEntered?.Invoke(_manager.transform);
                 }
             }
+
+            if(other.CompareTag("TurretArea"))
+            {
+                _manager.OnTranslateAnimationState(new SneakWalkAnimationState());
+            }
+
+            if (other.CompareTag("ExitTurretArea"))
+            {
+
+                _manager.OnTranslateAnimationState(new RunnerAnimationState());
+            }
         }
+
+        
     }
 }

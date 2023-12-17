@@ -157,10 +157,10 @@ namespace Controllers
             rigidBody.angularVelocity = Vector3.zero;
         }
         
-        public void SetInputValues(InputParams inputParams)
+        public void SetInputValues(InputParameters inputParams)
         {
-            _horizontalInput = inputParams.XValue;
-            _verticalInput = inputParams.YValue;
+            _horizontalInput = inputParams.ValueOfX;
+            _verticalInput = inputParams.ValueOfY;
         }
 
         public void DroneAreaMovement(Transform _transform)
@@ -168,12 +168,14 @@ namespace Controllers
             _transform.DOMoveZ(10, 3f).SetRelative().OnComplete(() =>
             {
                 _playerMovementData.RunnerForwardSpeed = 0f;
+                _playerMovementData.RunnerSidewaySpeed = 0f;
             });
         }
 
         public void ExitDroneAreaMovement()
         {
             _playerMovementData.RunnerForwardSpeed = 10f;
+            _playerMovementData.RunnerSidewaySpeed = 10f;
         }
         
         public void ChangeMovementType(JoystickStates joystickState)

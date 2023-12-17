@@ -1,4 +1,5 @@
-﻿using Controllers;
+﻿using System.Threading.Tasks;
+using Controllers;
 using Enums;
 using Controllers;
 using Signals;
@@ -25,7 +26,7 @@ namespace Managers
 
         #region Private Variables
 
-        private int _turretFireCounter;
+        private int _turretFireCounter = 2;
         
         #endregion
         #endregion
@@ -83,21 +84,19 @@ namespace Managers
         }
         #endregion
 
-        private void OnWrongTurretMatAreaEntered(Transform target)
+        private async void OnWrongTurretMatAreaEntered(Transform target)
         {
-            _turretFireCounter++;
-            int randomShoot = Random.Range(0, 2);
+            await Task.Delay(250);
             
-            if (_turretFireCounter % 2 == 0 && randomShoot == 1)
+            if (_turretFireCounter % 2 == 0)
             {
                 leftTurret.Aim(target);
-                print("Left");
-            }
-            else if(_turretFireCounter % 2 != 0 && randomShoot != 1)
-            {
                 rightTurret.Aim(target);
-                print("Right");
+                rightTurret.Shoot(target);
             }
+
+            await Task.Delay(250);
+            _turretFireCounter++;
         }
     }
 }

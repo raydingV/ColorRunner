@@ -1,4 +1,5 @@
 using System;
+using Commands;
 using Controllers;
 using DG.Tweening;
 using Enums;
@@ -21,6 +22,8 @@ namespace Managers
         [SerializeField] private TextMeshProUGUI levelText;
         [SerializeField] private TextMeshProUGUI prizeText;
         [SerializeField] private TextMeshProUGUI scoreText;
+        [SerializeField] private int arrowMoveAmount;
+        [SerializeField] private float arrowMoveDuration;
         #endregion
 
         #endregion
@@ -29,10 +32,15 @@ namespace Managers
 
         private int score = 100, prizeScore, scoreMultiplier; // score = Scoresignalsden cekilecek.
         private bool isPrize;
+        private PrizeArrowMoveCommand _prizeArrowMoveCommand;
 
         #endregion
-        
-        
+
+        private void Awake()
+        {
+            _prizeArrowMoveCommand = new PrizeArrowMoveCommand(ref arrow, ref arrowMoveAmount, ref arrowMoveDuration);
+        }
+
         #region Event Subscriptions
 
         private void OnEnable()
@@ -48,6 +56,7 @@ namespace Managers
             UISignals.Instance.onClosePanel += OnClosePanel;
             UISignals.Instance.onUpdateStageData += OnUpdateStageData;
             UISignals.Instance.onSetLevelText += OnSetLevelText;
+            UISignals.Instance.onIdleMoneyMultiplier += OnIdleMoneyMultiplier;
             CoreGameSignals.Instance.onPlay += OnPlay;
             CoreGameSignals.Instance.onLevelFailed += OnLevelFailed;
             CoreGameSignals.Instance.onLevelSuccessful += OnLevelSuccessful;
@@ -59,6 +68,7 @@ namespace Managers
             UISignals.Instance.onClosePanel -= OnClosePanel;
             UISignals.Instance.onUpdateStageData -= OnUpdateStageData;
             UISignals.Instance.onSetLevelText -= OnSetLevelText;
+            UISignals.Instance.onIdleMoneyMultiplier -= OnIdleMoneyMultiplier;
             CoreGameSignals.Instance.onPlay -= OnPlay;
             CoreGameSignals.Instance.onLevelFailed -= OnLevelFailed;
             CoreGameSignals.Instance.onLevelSuccessful -= OnLevelSuccessful;
@@ -135,6 +145,13 @@ namespace Managers
             StackSignals.Instance.onSetStackStartSize?.Invoke(increaceStackSize);
         }
 
+        private void OnIdleMoneyMultiplier(int multiplier)
+        {
+            scoreMultiplier = multiplier;
+            prizeScore = score * scoreMultiplier;
+            prizeText.text = prizeScore.ToString();
+        }
+        
         public void ToggleHaptic()
         {
             //AddVibration
@@ -147,47 +164,14 @@ namespace Managers
             score = 0;
         }
         
-        private void Update()   //Commande bol
-        {
-            if (isPrize)
-            {
-                if (arrow.rectTransform.position.x > 140 && arrow.rectTransform.position.x < 280)
-                {
-                    prizeText.text = (score * 2).ToString();
-                    scoreMultiplier = 2;
-                }
-                else if (arrow.rectTransform.position.x >= 280 && arrow.rectTransform.position.x < 420)
-                {
-                    prizeText.text = (score * 3).ToString();
-                    scoreMultiplier = 3;
-                }
-                else if (arrow.rectTransform.position.x >= 420 && arrow.rectTransform.position.x < 560)
-                {
-                    prizeText.text = (score * 5).ToString();
-                    scoreMultiplier = 5;
-                }
-                else if (arrow.rectTransform.position.x >= 560 && arrow.rectTransform.position.x < 700)
-                {
-                    prizeText.text = (score * 3).ToString();
-                    scoreMultiplier = 3;
-                }
-                else if (arrow.rectTransform.position.x >= 700)
-                {
-                    prizeText.text = (score * 2).ToString();
-                    scoreMultiplier = 2;
-                }
-            }
-        }
-
         public void IdleMoneyMultiplier()
         {
-            arrow.transform.DOLocalMoveX(1300, 1f).SetRelative(true).SetEase(Ease.Linear).SetLoops(-1,LoopType.Yoyo);
+            _prizeArrowMoveCommand.Execute();
         }
-
+        
         public void ClaimButton()
         {
-            prizeScore = score * scoreMultiplier;
-            //Score Signalse gonder.
+            //prizeScoreu Signalse gonder.
         }
 
         public void NoThanksButton()

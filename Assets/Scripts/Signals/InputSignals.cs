@@ -14,6 +14,6 @@ namespace Signals
         public UnityAction onPointerDragged = delegate { };
         public UnityAction onPointerReleased = delegate { };
         public UnityAction<JoystickStates> onJoystickStateChange;
-        public UnityAction<InputParams> onInputParamsUpdate = delegate {  };
+        public UnityAction<InputParameters> onInputParamsUpdate = delegate {  };
     }
 }

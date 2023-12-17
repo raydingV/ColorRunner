@@ -70,7 +70,7 @@ namespace Managers
             meshController.ChangeMatarialColor();
         }
 
-        private void OnTranslateAnimationState(AnimationStateMachine state)
+        public void OnTranslateAnimationState(AnimationStateMachine state)
         {
             if(physicController.CompareTag("Collected"))
             {

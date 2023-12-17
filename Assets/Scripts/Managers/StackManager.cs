@@ -51,7 +51,7 @@ namespace Managers
             _addStackCommand = new AddStackCommand(ref _collectable, ref _shakeStakeCommand, transform, this);
             _removeStackCommand = new RemoveStackCommand(ref _collectable);
             _stackLerpMoveCommand = new StackLerpMoveCommand(ref _collectable, ref _lerpData, _playerPossition);
-            OnSetStackStartSize(6);
+            OnInitializeStackOnStart(6);
         }
 
         private void FixedUpdate()
@@ -73,11 +73,12 @@ namespace Managers
             StackSignals.Instance.onAddStack += _addStackCommand.OnAddStack;
             StackSignals.Instance.onRemoveFromStack += _removeStackCommand.OnRemoveFromStack;
             StackSignals.Instance.onLerpStack += _stackLerpMoveCommand.OnLerpStackMove;
-            StackSignals.Instance.onSetStackStartSize += OnSetStackStartSize;
+            StackSignals.Instance.onSetStackStartSize += OnInitializeStackOnStart;
             //StackSignals.Instance.onThrowStackInMiniGame += OnThrowStackInMiniGame;
             StackSignals.Instance.onStackEnterDroneArea += OnStackEnterDroneArea;
             StackSignals.Instance.onMergeToPLayer += OnMergeToPLayer;
             StackSignals.Instance.onAddAfterDroneAnimationDone += OnAddAfterDroneAnimationDone;
+            StackSignals.Instance.onGetFirstCollectable += OnGetFirstCollectable;
             PlayerSignals.Instance.onChangeAllCollectableColorType += OnChangeAllCollectableColorType;
         }
 
@@ -86,11 +87,12 @@ namespace Managers
             StackSignals.Instance.onAddStack -= _addStackCommand.OnAddStack;
             StackSignals.Instance.onRemoveFromStack -= _removeStackCommand.OnRemoveFromStack;
             StackSignals.Instance.onLerpStack -= _stackLerpMoveCommand.OnLerpStackMove;
-            StackSignals.Instance.onSetStackStartSize -= OnSetStackStartSize;
+            StackSignals.Instance.onSetStackStartSize -= OnInitializeStackOnStart;
             //StackSignals.Instance.onThrowStackInMiniGame -= OnThrowStackInMiniGame;
             StackSignals.Instance.onStackEnterDroneArea -= OnStackEnterDroneArea;
             StackSignals.Instance.onMergeToPLayer -= OnMergeToPLayer;
             StackSignals.Instance.onAddAfterDroneAnimationDone -= OnAddAfterDroneAnimationDone;
+            StackSignals.Instance.onGetFirstCollectable += OnGetFirstCollectable;
             PlayerSignals.Instance.onChangeAllCollectableColorType -= OnChangeAllCollectableColorType;
         }
 
@@ -112,7 +114,6 @@ namespace Managers
         private void OnStackEnterDroneArea(Transform collectable, Transform mat)
         {
             if (!_collectable.Contains(collectable)) return;
-            PlayerSignals.Instance.onTranslateAnimationState(new SneakWalkAnimationState());
             _tempList.Add(collectable);
             _collectable.Remove(collectable);
             _collectable.TrimExcess();
@@ -120,7 +121,7 @@ namespace Managers
             collectable.DOMove(
                     new Vector3(mat.position.x, collectable.position.y,
                         collectable.position.z + UnityEngine.Random.Range(6, 10)), 1.5f)
-                .OnComplete(() => PlayerSignals.Instance.onTranslateAnimationState(new SneakIdleAnimationState()));
+                .OnComplete(() => collectable.GetComponent<CollectableManager>().OnTranslateAnimationState(new SneakIdleAnimationState()));
 
             if (_collectable.Count == 0)
             {
@@ -162,17 +163,36 @@ namespace Managers
             }
         }
 
-        private void OnSetStackStartSize(int size)
+        private Transform OnGetFirstCollectable()
         {
+            if (_collectable == null) return null;
+            return _collectable[0];
+        }
+
+        private void OnInitializeStackOnStart(int size)
+        {
+            GameObject firstInitialStack = Instantiate(stickmanPrefab, _playerPossition);
+            _collectable.Add(firstInitialStack.transform);
+            firstInitialStack.transform.SetParent(transform);
+            ScoreSignals.Instance.onCurrentLevelScoreUpdate?.Invoke();
+
             for (int i = 0; i < size; i++)
             {
-                _addStackCommand.OnAddStack(Instantiate(stickmanPrefab).transform);                
+                GameObject stackInstance = Instantiate(stickmanPrefab, _collectable.Last());
+                stackInstance.transform.SetParent(transform);
+                _collectable.Add(stackInstance.transform);
+                ScoreSignals.Instance.onCurrentLevelScoreUpdate?.Invoke();
             }
+
+            StackSignals.Instance.onSetScoreControllerPosition?.Invoke(_collectable[0]);
+            _collectable.TrimExcess();
 
             for (int i = 0; i < size; i++)
             {
                 _collectable[i].GetComponent<CollectableManager>().ChangeMatarialColor(colorType);
             }
+            
+            ScoreSignals.Instance.onHideScore?.Invoke();
         }
     }
 }

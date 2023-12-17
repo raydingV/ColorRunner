@@ -3,6 +3,7 @@ using Managers;
 using Signals;
 using StateMachine;
 using DG.Tweening;
+using Enums;
 using UnityEngine;
 
 
@@ -31,7 +32,9 @@ namespace Controllers
             if(other.CompareTag("DroneArea")) // change name Drone Area
             {
                 //manager.DeactivateMovement();
-                PlayerSignals.Instance.onPlayerEnterDroneArea?.Invoke();
+                // PlayerSignals.Instance.onPlayerEnterDroneArea?.Invoke();
+                manager.OnPlayerEnterDroneArea();
+                ScoreSignals.Instance.onHideScore?.Invoke();
             }
 
             if (other.CompareTag("TurretArea"))
@@ -42,8 +45,15 @@ namespace Controllers
             if(other.CompareTag("IdleTrigger"))
             {
                 PlayerSignals.Instance.onTranslateCameraState?.Invoke(new CameraIdleState());
+                UISignals.Instance.onOpenPanel?.Invoke(UIPanels.EndGamePrizePanel);
                 Debug.Log("idle trigger is done");
             }
+            
+            if (other.CompareTag("ExitTurretArea"))
+            {
+                PlayerSignals.Instance.onPlayerExitTurretArea?.Invoke();
+            }
+            
             #endregion
 
             #region Idle Area
@@ -59,13 +69,10 @@ namespace Controllers
             #region Runner Area
             if (other.CompareTag("DroneArea"))
             {
-                PlayerSignals.Instance.onPlayerExitDroneArea?.Invoke();
+                // PlayerSignals.Instance.onPlayerExitDroneArea?.Invoke();
+                // manager.OnPlayerExitDroneArea();
             }
             
-            if (other.CompareTag("ExitTurretArea"))
-            {
-                PlayerSignals.Instance.onPlayerExitTurretArea?.Invoke();
-            }
             #endregion
 
             #region Idle Area

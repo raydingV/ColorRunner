@@ -37,8 +37,8 @@ namespace Managers
             InputSignals.Instance.onJoystickStateChange += OnJoystickStateChange;
             PlayerSignals.Instance.onPlayerEnterTurretArea += OnPlayerEnterTurretArea;
             PlayerSignals.Instance.onPlayerExitTurretArea += OnPlayerExitTurretArea;
-            PlayerSignals.Instance.onPlayerEnterDroneArea += OnPlayerEnterDroneArea;
-            PlayerSignals.Instance.onPlayerExitDroneArea += OnPlayerExitDroneArea;
+            // PlayerSignals.Instance.onPlayerEnterDroneArea += OnPlayerEnterDroneArea;
+            PlayerSignals.Instance.onDroneAnimationComplated += OnDroneAnimationComplated;
         }
         
         private void UnsubscribeEvents()
@@ -51,8 +51,8 @@ namespace Managers
             InputSignals.Instance.onJoystickStateChange -= OnJoystickStateChange;
             PlayerSignals.Instance.onPlayerEnterTurretArea -= OnPlayerEnterTurretArea;
             PlayerSignals.Instance.onPlayerExitTurretArea -= OnPlayerExitTurretArea;
-            PlayerSignals.Instance.onPlayerEnterDroneArea -= OnPlayerEnterDroneArea;
-            PlayerSignals.Instance.onPlayerExitDroneArea -= OnPlayerExitDroneArea;
+            // PlayerSignals.Instance.onPlayerEnterDroneArea -= OnPlayerEnterDroneArea;
+            PlayerSignals.Instance.onDroneAnimationComplated -= OnDroneAnimationComplated;
         }
         
         private void OnDisable()
@@ -96,10 +96,10 @@ namespace Managers
         {
             playerMovementController.JoystickPressState(false, false, true);
             playerAnimationController.SetAnimationState(SticmanAnimationType.Idle);
-            playerMovementController.SetInputValues(new InputParams() { XValue = 0, YValue = 0,});
+            playerMovementController.SetInputValues(new InputParameters() { ValueOfX = 0, ValueOfY = 0,});
         }
 
-        private void OnInputParamsUpdate(InputParams inputParams)
+        private void OnInputParamsUpdate(InputParameters inputParams)
         {
             playerMovementController.SetInputValues(inputParams);
         }      
@@ -149,12 +149,12 @@ namespace Managers
             playerAnimationController.SetAnimationState(SticmanAnimationType.Run);
         }
         
-        private void OnPlayerEnterDroneArea()
+        public void OnPlayerEnterDroneArea()
         {
             playerMovementController.DroneAreaMovement(transform);
         }
 
-        private void OnPlayerExitDroneArea()
+        public void OnDroneAnimationComplated()
         {
             playerMovementController.ExitDroneAreaMovement();
         }
