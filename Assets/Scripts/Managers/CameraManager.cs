@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using System.Diagnostics.Contracts;
 using StateMachine;
 using Cinemachine;
 using UnityEngine;
@@ -14,6 +15,7 @@ namespace Managers
         #region Public Variables
 
         public CinemachineVirtualCamera RunnerCam;
+        public CinemachineVirtualCamera MiniGameCam;
         public CinemachineVirtualCamera IdleCam;
         public Animator StateDrivenCameraAnimator;
         public Transform Player;
@@ -31,12 +33,10 @@ namespace Managers
         private void Awake()
         {
             RunnerCam = transform.GetChild(0).GetComponent<CinemachineVirtualCamera>();
-            IdleCam = transform.GetChild(1).GetComponent<CinemachineVirtualCamera>();
+            MiniGameCam = transform.GetChild(1).GetComponent<CinemachineVirtualCamera>();
+            IdleCam = transform.GetChild(2).GetComponent<CinemachineVirtualCamera>();
             StateDrivenCameraAnimator = GetComponent<Animator>();
-            //_state = new CameraRunnerState();
-            //_state.SetContext(this);
-            //_state.ChangeStateCamera();
-
+            onTranslateCameraState(new CameraRunnerState());
         }
         
         #region Subscriptions
@@ -49,6 +49,7 @@ namespace Managers
         private void Subscribe()
         {
             CoreGameSignals.Instance.onPlay += OnPlay;
+            CoreGameSignals.Instance.onReset += OnReset;
             
             PlayerSignals.Instance.onTranslateCameraState += onTranslateCameraState;
             PlayerSignals.Instance.onPlayerEnterDroneArea += OnPlayerEnterDroneArea;
@@ -59,7 +60,8 @@ namespace Managers
         private void UnSubscribe()
         {
             CoreGameSignals.Instance.onPlay -= OnPlay;
-            
+            CoreGameSignals.Instance.onReset -= OnReset;
+
             PlayerSignals.Instance.onTranslateCameraState -= onTranslateCameraState;
             PlayerSignals.Instance.onPlayerEnterDroneArea -= OnPlayerEnterDroneArea;
             PlayerSignals.Instance.onPlayerExitDroneArea -= OnDroneAnimationComplated;
@@ -88,6 +90,11 @@ namespace Managers
             _state.SetContext(this);
             _state.ChangeStateCamera();
         }
-       
+
+        private void OnReset()
+        {
+            Player = PlayerSignals.Instance.onGetPlayerTransfrom();
+            onTranslateCameraState(new CameraRunnerState());
+        }
     }
 }

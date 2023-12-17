@@ -2,6 +2,7 @@
 using Controllers;
 using Data.ValueObject;
 using Enums;
+using Signals;
 using TMPro;
 using UnityEditor;
 using UnityEngine;
@@ -55,12 +56,12 @@ namespace Managers
 
         private void SubscribeEvents()
         {
-            
+            SaveSignals.Instance.onDataGet += Init;
         }
 
         private void UnSubscribeEvents()
         {
-            
+            SaveSignals.Instance.onDataGet -= Init;
         }
 
         private void OnDisable()
@@ -70,10 +71,11 @@ namespace Managers
 
         #endregion
 
-        private void Start()
+        private void Init()
         {
             SetDatas(BuildingData);
             CheckDatas();
+            InitializeTextOnStart();
         }
         
         public void SetDatas(BuildingData buildingData)
@@ -82,7 +84,7 @@ namespace Managers
             _mainBuildingComplateState = buildingData.mainBuildingData.CompleteState;
             _mainPrice = buildingData.mainBuildingData.Price;
             _mainPayedAmount = buildingData.mainBuildingData.PayedAmount;
-
+            
             _sideBuildingName = buildingData.sideBuildindData.BuildingName;
             _sideBuildingComplateState = buildingData.sideBuildindData.CompleteState;
             _sidePrice = buildingData.sideBuildindData.Price;
@@ -137,6 +139,12 @@ namespace Managers
         public void SetText(TextMeshPro text,string BuildingName ,int PayedAmount, int price)
         {
             text.text = BuildingName + "\n" + PayedAmount + " / " + price;
+        }
+
+        private void InitializeTextOnStart()
+        {
+            SetText(mainText,_mainBuildingName,_mainPayedAmount,_mainPrice);
+            SetText(sideText,_sideBuildingName,_sidePayedAmount,_sidePrice);
         }
 
         private void SetDataToBuildingData()

@@ -1,9 +1,8 @@
-using System;
 using Enums;
 using Keys;
 using DG.Tweening;
-using Signals;
 using UnityEngine;
+using Managers;
 
 namespace Controllers
 {
@@ -19,6 +18,7 @@ namespace Controllers
 
         [SerializeField] private Rigidbody rigidBody;
         [SerializeField] private GameStates currentGameState;
+        [SerializeField] private PlayerManager manager;
         
         #endregion
 
@@ -109,6 +109,7 @@ namespace Controllers
             {
                 Quaternion toRotation = Quaternion.LookRotation(_movementDirection);
                 transform.rotation = toRotation;
+                return;
             }
         }
         private void RunnerStopSideways()
@@ -152,6 +153,11 @@ namespace Controllers
             _isReadyToMove = false;
             transform.position = Vector3.zero;
             transform.rotation = Quaternion.identity;
+        }
+
+        public void OnReset()
+        {
+            DOTween.KillAll();
         }
     }
 }

@@ -27,10 +27,11 @@ namespace Signals
 
         public Action onPlayerScaleUp;
         public Action<Material> onChangeMaterial;
-        public Action<AnimationStateMachine> onTranslateAnimationState;
+        public Action<AnimationStateMachine> onTranslateCollectableAnimationState;
         public Action<CameraStateMachine> onTranslateCameraState;
         public Action<ColorType> onChangeAllCollectableColorType;
-
+        public Action<AnimationStateMachine> onTranslatePlayerAnimationState;
         public Func<Transform> onGetPlayerTransfrom = delegate { return null;};
+
     }
 }

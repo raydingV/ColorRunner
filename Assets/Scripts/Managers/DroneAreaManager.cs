@@ -56,7 +56,7 @@ namespace Managers
 
         private void UnSubscribeEvents()
         {
-            StackSignals.Instance.onLastCollectableEnterDroneArea += OnLastCollectableEnterDroneArea;
+            StackSignals.Instance.onLastCollectableEnterDroneArea -= OnLastCollectableEnterDroneArea;
         }
 
         #endregion
@@ -86,8 +86,7 @@ namespace Managers
         }
 
         #endregion
-
-
+        
         private void DisableMatControllersCollider()
         {
             matControllerLeft.DisableBoxCollider();

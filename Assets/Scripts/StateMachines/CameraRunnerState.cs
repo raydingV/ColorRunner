@@ -9,7 +9,7 @@ namespace StateMachine
         {
             _runnerCamera.Follow = _target;
             _cinamationAnimationStates.Play("RunnerCam");
-            StackSignals.Instance.onActivateOutlineTrasition(OutlineType.Outline);
+            // StackSignals.Instance.onActivateOutlineTrasition(OutlineType.Outline);
         }
     }
 }

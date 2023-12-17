@@ -14,6 +14,7 @@ namespace Signals
 
         public Action<Transform> onAddStack;
         public Action<Transform> onRemoveFromStack;
+        public Action onCollectableRemovedFromStack;
         public Action<int> onSetStackStartSize;
         public Action onLerpStack;
         public Action onShakeStackSize;

@@ -23,6 +23,8 @@ namespace Commands
             _collectable.Remove(collectable);
             _collectable.TrimExcess();
             collectable.gameObject.SetActive(false); //after use with pool ?
+            StackSignals.Instance.onCollectableRemovedFromStack?.Invoke();
+            if(_collectable.Count == 0) return;
             StackSignals.Instance.onSetScoreControllerPosition?.Invoke(_collectable[0]);
         }
     }

@@ -35,12 +35,9 @@ MonoBehaviour:
     - Cinemachine
     - Boxophobic.Utils.Scripts
     - Boxophobic.PolyverseSkies.Scripts
-    - Sirenix.OdinInspector.CompatibilityLayer
     - Boxophobic.Utils.Editor
     - PPv2URPConverters
     - Boxophobic.PolyverseSkies.Editor
-    - Sirenix.OdinInspector.CompatibilityLayer.Editor
-    - Sirenix.OdinInspector.Modules.UnityMathematics
     showAdvancedSettings: 0
   addMgrToSceneAutomatically: 0
   autoUpdateReferences: 1

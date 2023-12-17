@@ -17,6 +17,30 @@ namespace Controllers
         private Sequence _sequence;
         private DroneMovementCommand _droneMovementCommand;
 
+        #region Event Subscription
+
+        private void OnEnable()
+        {
+            SubscribeEvents();
+        }
+
+        private void SubscribeEvents()
+        {
+            CoreGameSignals.Instance.onReset += OnReset;
+        }
+
+        private void UnSubscribeEvents()
+        {
+            CoreGameSignals.Instance.onReset -= OnReset;
+        }
+
+        private void OnDisable()
+        {
+            UnSubscribeEvents();
+        }
+
+        #endregion
+        
         private void Awake()
         {
             _droneMovementCommand = new DroneMovementCommand(transform, _sequence, ref movePath, ref moveSpeed, delay);
@@ -25,6 +49,11 @@ namespace Controllers
         public void StartDroneAnimation()
         {
             _droneMovementCommand.Execute();
+        }
+
+        private void OnReset()
+        {
+            _sequence.Kill();
         }
     }
 }

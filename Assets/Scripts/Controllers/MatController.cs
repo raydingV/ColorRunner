@@ -1,6 +1,8 @@
-﻿using Enums;
+﻿using System;
+using Enums;
 using System.Collections;
 using DG.Tweening;
+using Signals;
 using UnityEngine;
 using UnityObject;
 using ValueObject;
@@ -37,6 +39,31 @@ namespace Controllers
             _boxCollider = GetComponent<BoxCollider>();
         }
 
+        #region Event Subscription
+
+        private void OnEnable()
+        {
+            SubscribeEvents();
+        }
+
+        private void SubscribeEvents()
+        {
+            CoreGameSignals.Instance.onReset += OnReset;
+        }
+
+        private void UnSubscribeEvents()
+        {
+            CoreGameSignals.Instance.onReset -= OnReset;
+        }
+
+        private void OnDisable()
+        {
+            UnSubscribeEvents();
+        }
+
+        #endregion
+        
+        
         public void GetColorData(ColorType colorType) => ColorData = Resources.Load<CD_ColorData>("Data/CD_ColorData").Colors[(int)colorType];
 
         public void SetColorData(ColorType colorType)
@@ -47,13 +74,20 @@ namespace Controllers
 
         public void DisableBoxCollider()
         {
-            _boxCollider.enabled = false;
+            if(_boxCollider.enabled)
+                _boxCollider.enabled = false;
         }
         
         public void CloseMat()
         {
             transform.DOScaleZ(.25f, .5f).OnComplete(() => { transform.DOScaleX(0, .5f).OnComplete(() =>
-            { transform.DOScaleZ(0, .1f);});});
+            { transform.DOScaleZ(0.01f, .1f);});});
+        }
+
+        private void OnReset()
+        {
+            _boxCollider.enabled = true;
+            DOTween.KillAll();
         }
     }
 }

@@ -43,7 +43,6 @@ namespace Controllers
             if(other.CompareTag("IdleTrigger"))
             {
                 print("IdleTriggered");
-                CoreGameSignals.Instance.onChangeGameState?.Invoke(GameStates.Idle);
                 PlayerSignals.Instance.onPlayerEnterIdleArea?.Invoke();
                 StackSignals.Instance.onMergeToPLayer?.Invoke();
                 other.gameObject.SetActive(false);
@@ -53,19 +52,14 @@ namespace Controllers
         {
             if(other.CompareTag("DroneArea")) // change name Drone Area
             {
-                PlayerSignals.Instance.onPlayerEnterDroneArea?.Invoke();
                 ScoreSignals.Instance.onHideScore?.Invoke();
+                PlayerSignals.Instance.onPlayerEnterDroneArea?.Invoke();
             }
             
             if (other.CompareTag("ExitTurretArea"))
             {
                 manager.ChangeForwardSpeed(PlayerSpeedState.Normal);
             }
-        }
-
-        private void OnTriggerStay(Collider other)
-        {
-
         }
     }
 }

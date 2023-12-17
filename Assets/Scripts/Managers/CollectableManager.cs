@@ -49,7 +49,7 @@ namespace Managers
         private void Subscribe()
         {
             PlayerSignals.Instance.onChangeMaterial += OnSetCollectableMaterial;
-            PlayerSignals.Instance.onTranslateAnimationState += OnTranslateAnimationState;
+            PlayerSignals.Instance.onTranslateCollectableAnimationState += OnTranslateAnimationState;
             StackSignals.Instance.onActivateOutlineTrasition += OnActivateOutlineTrasition;
             RunnerSignals.Instance.onDroneAnimationComplated += OnDroneAnimationComplated;
             StackSignals.Instance.onChangeMatarialColor += OnChangeMatarialColor;
@@ -58,7 +58,7 @@ namespace Managers
         private void UnSubscribe()
         {
             PlayerSignals.Instance.onChangeMaterial -= OnSetCollectableMaterial;
-            PlayerSignals.Instance.onTranslateAnimationState -= OnTranslateAnimationState;
+            PlayerSignals.Instance.onTranslateCollectableAnimationState -= OnTranslateAnimationState;
             StackSignals.Instance.onActivateOutlineTrasition -= OnActivateOutlineTrasition;
             RunnerSignals.Instance.onDroneAnimationComplated -= OnDroneAnimationComplated;
             StackSignals.Instance.onChangeMatarialColor -= OnChangeMatarialColor;
@@ -102,7 +102,7 @@ namespace Managers
         {
             if (physicController.CompareTag("Collected"))
             {
-                animatorController.TranslateAnimationState(state);
+                animatorController.TranslateCollectableAnimationState(state);
             }
         }
 

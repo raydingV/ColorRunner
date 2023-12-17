@@ -68,7 +68,7 @@ namespace Controllers
 
        
 
-        public void TranslateAnimationState(AnimationStateMachine state)
+        public void TranslateCollectableAnimationState(AnimationStateMachine state)
         {
             _CollectableStateMachine = state;
             _CollectableStateMachine.SetContext(ref _CollectableAnimator);
@@ -79,7 +79,7 @@ namespace Controllers
         {
             if (manager.GetComponentInChildren<CollectablePhisicController>().CompareTag("Collected"))
             {
-                TranslateAnimationState(new RunnerAnimationState());
+                TranslateCollectableAnimationState(new RunnerAnimationState());
             }
         }
         

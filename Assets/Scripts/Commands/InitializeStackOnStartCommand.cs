@@ -28,6 +28,7 @@ namespace Commands
             if (_collectable.Count == 0)
             {
                 GameObject firstInitialStack = GameObject.Instantiate(stickmanPrefab);
+                firstInitialStack.transform.localPosition = new Vector3(0, .4f, 0);
                 _collectable.Add(firstInitialStack.transform);
                 firstInitialStack.transform.SetParent(_parent);
                 ScoreSignals.Instance.onCurrentLevelScoreUpdate?.Invoke(true);
@@ -36,7 +37,7 @@ namespace Commands
             for (int i = 0; i < size; i++)
             {
                 Transform frontStickman = _collectable[_collectable.Count - 1].transform;
-                frontStickman.position = new Vector3(0,.3f,frontStickman.position.z - 1.5f);
+                frontStickman.position = new Vector3(0, frontStickman.transform.position.y,frontStickman.position.z - 1.5f);
                 GameObject stackInstance = GameObject.Instantiate(stickmanPrefab, frontStickman.position,quaternion.identity);
                 stackInstance.transform.SetParent(_parent);
                 _collectable.Add(stackInstance.transform);

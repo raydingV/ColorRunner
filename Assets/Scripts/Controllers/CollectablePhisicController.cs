@@ -22,6 +22,7 @@ namespace Controllers
             if (other.CompareTag("Collectable") && CompareTag("Collected"))
             {
                 other.tag = "Collected";
+                other.transform.parent.GetComponent<CollectableManager>().OnTranslateAnimationState(new RunnerAnimationState());
                 if (manager.CompareColor(other.transform.parent.GetComponent<CollectableManager>().currentColorType))
                 {
                     manager.AddCollectableToStackManager(other.transform.parent);

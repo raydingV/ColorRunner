@@ -5,7 +5,6 @@ using Enums;
 using Signals;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Sirenix.OdinInspector;
 using StateMachine;
 using UnityEngine;
 using UnityObject;
@@ -29,7 +28,7 @@ namespace Managers
         #region private Variables
 
         private LerpData _lerpData;
-        [ShowInInspector]private Transform _playerPosition;
+        private Transform _playerPosition;
         
         private AddCollectablesAfterDroneAnimationDoneCommand _addCollectablesAfterDroneAnimationDoneCommand;
         private AddStackCommand _addStackCommand;
@@ -78,10 +77,11 @@ namespace Managers
         private void Subscribe()
         {
             CoreGameSignals.Instance.onPlay += OnPlay;
+            CoreGameSignals.Instance.onReset += OnReset;
             
             StackSignals.Instance.onAddStack += _addStackCommand.OnAddStack;
             StackSignals.Instance.onRemoveFromStack += _removeStackCommand.OnRemoveFromStack;
-            // StackSignals.Instance.onLerpStack += _stackLerpMoveCommand.OnLerpStackMove;
+            StackSignals.Instance.onCollectableRemovedFromStack += OnCollectableRemovedFromStack;
             StackSignals.Instance.onSetStackStartSize += _initializeStackOnStartCommand.OnInitializeStackOnStart;
             //StackSignals.Instance.onThrowStackInMiniGame += OnThrowStackInMiniGame;
             StackSignals.Instance.onStackEnterDroneArea += _stackEnterDroneAreaCommand.OnStackEnterDroneArea;
@@ -94,10 +94,11 @@ namespace Managers
         private void UnSubscribe()
         {
             CoreGameSignals.Instance.onPlay -= OnPlay;
+            CoreGameSignals.Instance.onReset -= OnReset;
             
             StackSignals.Instance.onAddStack -= _addStackCommand.OnAddStack;
             StackSignals.Instance.onRemoveFromStack -= _removeStackCommand.OnRemoveFromStack;
-            // StackSignals.Instance.onLerpStack -= _stackLerpMoveCommand.OnLerpStackMove;
+            StackSignals.Instance.onCollectableRemovedFromStack -= OnCollectableRemovedFromStack;
             StackSignals.Instance.onSetStackStartSize -= _initializeStackOnStartCommand.OnInitializeStackOnStart;
             //StackSignals.Instance.onThrowStackInMiniGame -= OnThrowStackInMiniGame;
             StackSignals.Instance.onStackEnterDroneArea -= _stackEnterDroneAreaCommand.OnStackEnterDroneArea;
@@ -148,9 +149,35 @@ namespace Managers
             _collectableList.Clear();
             _collectableList.TrimExcess();
             print("Merge to player finished");
-            PlayerSignals.Instance.onTranslateCameraState?.Invoke(new CameraIdleState());
+            PlayerSignals.Instance.onTranslateCameraState?.Invoke(new CameraMiniGameState());
             UISignals.Instance.onOpenPanel?.Invoke(UIPanels.EndGamePrizePanel);
         }
         // throw sticman from temporary list
+
+        private int GetCollectableCount() => _collectableList.Count + _tempList.Count;
+        
+        private void OnCollectableRemovedFromStack()
+        {
+            if (GetCollectableCount() == 0)
+            {
+                LevelSignals.Instance.onLevelFailed?.Invoke();
+                ScoreSignals.Instance.onHideScore?.Invoke();
+            }
+        }
+        
+        
+        private void OnReset()
+        {
+            for (int i = 0; i < transform.childCount; i++)
+            {
+                Destroy(transform.GetChild(i).gameObject);
+            }
+            
+            _collectableList.Clear();
+            _tempList.Clear();
+            _collectableList.TrimExcess();
+            _tempList.TrimExcess();
+            _initializeStackOnStartCommand.OnInitializeStackOnStart(5);//test pupose that bind next level signal
+        }
     }
 }

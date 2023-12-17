@@ -5,7 +5,7 @@ using Data.ValueObject;
 using Enums;
 using Keys;
 using Signals;
-using Sirenix.OdinInspector;
+
 using UnityEngine;
 using UnityObject;
 
@@ -31,13 +31,13 @@ namespace Managers
 
         private int _currentIdleLevel = 1;
         private int _currentScore = 0;
-        [ShowInInspector] private IdleLevelData _levelsData;
-        [ShowInInspector] private List<BuildingData> _buildingDatas;
+        private IdleLevelData _levelsData;
+        private List<BuildingData> _buildingDatas;
 
-        [ShowInInspector] private List<int> mainPayedAmount = new List<int>();
-        [ShowInInspector] private List<BuildingComplateState> mainComplateState = new List<BuildingComplateState>();
-        [ShowInInspector] private List<int> sidePayedAmount = new List<int>();
-        [ShowInInspector] private List<BuildingComplateState> sideComplateState = new List<BuildingComplateState>();
+        private List<int> mainPayedAmount = new List<int>();
+        private List<BuildingComplateState> mainComplateState = new List<BuildingComplateState>();
+        private List<int> sidePayedAmount = new List<int>();
+        private List<BuildingComplateState> sideComplateState = new List<BuildingComplateState>();
 
         #endregion
 
@@ -48,6 +48,7 @@ namespace Managers
             _levelsData = GetIdleLevelBuildingData();
             GetCurrentLevelData(SaveSignals.Instance.onLoadIdleGame());
             SetDataToBuildingManagers();
+            SaveSignals.Instance.onDataGet?.Invoke();
         }
         
         private IdleLevelData GetIdleLevelBuildingData() => Resources.Load<CD_IdleLevelData>("Data/CD_IdleLevelData").IdleLevel;

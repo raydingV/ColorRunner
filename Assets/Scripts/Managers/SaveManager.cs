@@ -37,11 +37,6 @@ namespace Managers
         } 
         #endregion
 
-        private void Awake()
-        {
-
-        }
-
         private void OnRunnerSaveData()
         {
             RunnerSaveGame(

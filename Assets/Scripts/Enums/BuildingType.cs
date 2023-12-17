@@ -9,5 +9,11 @@
         School,
         Shop,
         WaffleHouse,
+        IceCream,
+        LongBuilding,
+        PoliceStation,
+        SkyKeeper,
+        PizzaHouse,
+        TacoHouse
     }
 }

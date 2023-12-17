@@ -55,7 +55,6 @@ namespace Managers
         {
             UISignals.Instance.onOpenPanel += OnOpenPanel;
             UISignals.Instance.onClosePanel += OnClosePanel;
-            UISignals.Instance.onUpdateStageData += OnUpdateStageData;
             UISignals.Instance.onSetLevelText += OnSetLevelText;
             UISignals.Instance.onIdleMoneyMultiplier += OnIdleMoneyMultiplier;
             CoreGameSignals.Instance.onPlay += OnPlay;
@@ -67,7 +66,6 @@ namespace Managers
         {
             UISignals.Instance.onOpenPanel -= OnOpenPanel;
             UISignals.Instance.onClosePanel -= OnClosePanel;
-            UISignals.Instance.onUpdateStageData -= OnUpdateStageData;
             UISignals.Instance.onSetLevelText -= OnSetLevelText;
             UISignals.Instance.onIdleMoneyMultiplier -= OnIdleMoneyMultiplier;
             CoreGameSignals.Instance.onPlay -= OnPlay;
@@ -91,23 +89,16 @@ namespace Managers
         {
             uiPanelController.ClosePanel(panelParam);
         }
-
-        private void OnUpdateStageData(int value)
-        {
-            
-        }
-
         private void OnSetLevelText(int value)
         {
-            
+            levelText.text = "Level " + value;
         }
 
         private void OnPlay()
         {
             UISignals.Instance.onClosePanel?.Invoke(UIPanels.PreGamePanel);
-            PlayerSignals.Instance.onTranslateAnimationState(new RunnerAnimationState());
+            PlayerSignals.Instance.onTranslateCollectableAnimationState(new RunnerAnimationState());
             CoreGameSignals.Instance.onChangeGameState?.Invoke(GameStates.Runner);
-
         }
 
         private void OnLevelFailed()
@@ -126,7 +117,7 @@ namespace Managers
 
         public void Play()
         {
-            PlayerSignals.Instance.onTranslateAnimationState(new RunnerAnimationState());
+            PlayerSignals.Instance.onTranslateCollectableAnimationState(new RunnerAnimationState());
             CoreGameSignals.Instance.onPlay?.Invoke();
         }
 
@@ -134,15 +125,21 @@ namespace Managers
         {
             isPrize = false;
             LevelSignals.Instance.onNextLevel?.Invoke();
+            SaveSignals.Instance.onIdleSaveData?.Invoke();
+            CoreGameSignals.Instance.onReset?.Invoke();
             UISignals.Instance.onClosePanel?.Invoke(UIPanels.IdlePanel);
+            UISignals.Instance.onClosePanel?.Invoke(UIPanels.InGamePanel);
             UISignals.Instance.onOpenPanel?.Invoke(UIPanels.PreGamePanel);
         }
 
         public void RestartLevel()
         {
             LevelSignals.Instance.onRestartLevel?.Invoke();
-            UISignals.Instance.onClosePanel?.Invoke(UIPanels.InGamePanel);
+            CoreGameSignals.Instance.onReset?.Invoke();
+            UISignals.Instance.onClosePanel?.Invoke(UIPanels.LoseGamePanel);
+            UISignals.Instance.onOpenPanel?.Invoke(UIPanels.InGamePanel);
             UISignals.Instance.onOpenPanel?.Invoke(UIPanels.PreGamePanel);
+            OnReset();
         }
 
         public void AddStackButton()
@@ -177,12 +174,20 @@ namespace Managers
         public void ClaimButton()
         {
             //prizeScoreu Signalse gonder.
+            CoreGameSignals.Instance.onChangeGameState?.Invoke(GameStates.Idle);
+            UISignals.Instance.onOpenPanel?.Invoke(UIPanels.IdlePanel);
+            UISignals.Instance.onClosePanel?.Invoke(UIPanels.InGamePanel);
+            PlayerSignals.Instance.onTranslateCameraState?.Invoke(new CameraIdleState());
         }
 
         public void NoThanksButton()
         {
             prizeScore = score;
+            CoreGameSignals.Instance.onChangeGameState?.Invoke(GameStates.Idle);
             UISignals.Instance.onClosePanel?.Invoke(UIPanels.EndGamePrizePanel);
+            UISignals.Instance.onClosePanel?.Invoke(UIPanels.InGamePanel);
+            UISignals.Instance.onOpenPanel?.Invoke(UIPanels.IdlePanel);
+            PlayerSignals.Instance.onTranslateCameraState?.Invoke(new CameraIdleState());
         }
     }
 }

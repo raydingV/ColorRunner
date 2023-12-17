@@ -22,30 +22,41 @@ namespace Managers
         #region Serialized Variables
 
         [SerializeField] private GameObject levelHolder;
-
+        
         #endregion
 
         #region Private Variables
         
         private int _levelID;
         private LevelLoaderCommand levelLoader;
-        private ClearActiveLevelCommand levelClearer;
-        
+        private Commands.ClearActiveLevelCommand levelClearer;
+
         #endregion
 
         #endregion
 
         private void Awake()
         {
-            _levelID = GetActiveLevel();
-            levelLoader = new LevelLoaderCommand();
-            levelClearer = new ClearActiveLevelCommand();
+            Initialize();
         }
 
+        private void Initialize()
+        {
+            _levelID = GetActiveLevel();
+            levelLoader = new LevelLoaderCommand();
+            levelClearer = new Commands.ClearActiveLevelCommand();
+        }
+        
         private int GetActiveLevel()
         {
+            if (!ES3.FileExists()) return 1;
+            return ES3.KeyExists("Level") ? ES3.Load<int>("Level") : 1;
+        }
+
+        private int GetActiveIdleLevel()
+        {
             if (!ES3.FileExists()) return 0;
-            return ES3.KeyExists("Level") ? ES3.Load<int>("Level") : 0;
+            return ES3.KeyExists("IdleLevel") ? ES3.Load<int>("IdleLevel") : 0;
         }
         
         #region Event Subscription
@@ -83,6 +94,7 @@ namespace Managers
         private void Start()
         {
             OnInitializeLevel();
+            SetLevelText();
         }
 
         private void OnNextLevel()
@@ -92,6 +104,7 @@ namespace Managers
             CoreGameSignals.Instance.onReset?.Invoke();
             SaveSignals.Instance.onRunnerSaveData?.Invoke();
             LevelSignals.Instance.onLevelInitialize?.Invoke();
+            SetLevelText();
         }
 
         private void OnRestartLevel()

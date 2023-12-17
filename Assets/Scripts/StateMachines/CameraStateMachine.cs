@@ -15,6 +15,7 @@ namespace StateMachine
         protected CameraManager ? _cameraManager { get; set; }
         protected Transform ? _target { get; set; }
         protected CinemachineVirtualCamera ? _runnerCamera { get; set; }
+        protected CinemachineVirtualCamera ? _miniGameCamera { get; set; }
         protected CinemachineVirtualCamera ? _idleCamera { get; set; }
         protected Animator ? _cinamationAnimationStates{ get; set; }
 
@@ -27,6 +28,7 @@ namespace StateMachine
             _cameraManager = cameraManager;
             _target = _cameraManager.Player;
             _runnerCamera = _cameraManager.RunnerCam;
+            _miniGameCamera = _cameraManager.MiniGameCam;
             _idleCamera = _cameraManager.IdleCam;
             _cinamationAnimationStates = _cameraManager.StateDrivenCameraAnimator;
         }
