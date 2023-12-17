@@ -51,14 +51,16 @@ namespace Managers
         {
             PlayerSignals.Instance.onTranslateCameraState += onTranslateCameraState;
             PlayerSignals.Instance.onPlayerEnterDroneArea += OnPlayerEnterDroneArea;
-            RunnerSignals.Instance.onDroneAnimationComplated += OnDroneAnimationComplated;
+            PlayerSignals.Instance.onPlayerExitDroneArea += OnDroneAnimationComplated;
+            // RunnerSignals.Instance.onDroneAnimationComplated += OnDroneAnimationComplated;
         }
 
         private void UnSubscribe()
         {
             PlayerSignals.Instance.onTranslateCameraState -= onTranslateCameraState;
             PlayerSignals.Instance.onPlayerEnterDroneArea -= OnPlayerEnterDroneArea;
-            RunnerSignals.Instance.onDroneAnimationComplated -= OnDroneAnimationComplated;
+            PlayerSignals.Instance.onPlayerExitDroneArea -= OnDroneAnimationComplated;
+            // RunnerSignals.Instance.onDroneAnimationComplated -= OnDroneAnimationComplated;
         }
 
         private void OnDisable()
@@ -71,9 +73,7 @@ namespace Managers
 
 
         private void OnDroneAnimationComplated() => RunnerCam.Follow = Player;
-
-
-
+        
         private void onTranslateCameraState(CameraStateMachine state)
         {
             _state = state;

@@ -9,26 +9,27 @@ namespace Controllers
 {
     public class CollectableMeshController : MonoBehaviour
     {
+        
         #region SelfVariables
-
-        #region Private Variavles
-
-        private ColorData _colorData;
-
-        #endregion Private Variavles
-
-        #region Serialize Variavles
-
-        [SerializeField] private CollectableManager manager;
-
-        #endregion Serialize Variavles
 
         #region Public Variables
 
         public Material Material;
 
         #endregion Public Variables
+        
+        #region Serialize Variavles
 
+        [SerializeField] private CollectableManager manager;
+
+        #endregion Serialize Variavles
+        
+        #region Private Variavles
+
+        private ColorData _colorData;
+        private Material _rainbow; 
+        #endregion Private Variavles
+        
         #endregion SelfVariables
 
         private void Awake()
@@ -39,6 +40,7 @@ namespace Controllers
         private void Start()
         {
             GetColorData();
+            GetRainbowMat();
             Material.color = _colorData.Color;
         }
 
@@ -50,11 +52,19 @@ namespace Controllers
 
         private void GetColorData() => _colorData = Resources.Load<CD_ColorData>("Data/CD_ColorData").Colors[(int)manager.currentColorType];
 
+        private void GetRainbowMat() => _rainbow = Resources.Load<Material>("RainbowMaterial/RainbowMaterial");
+        
+        
         public void SetCollectableMatarial(Material material)
         {
             Material.color = material.color;
         }
 
+        public void SetRainbowMaterial()
+        {
+            GetComponent<SkinnedMeshRenderer>().material = _rainbow;
+        }
+        
         public void ActivateOutlineTrasition(OutlineType type)
         {
             if (type == OutlineType.NonOutline)

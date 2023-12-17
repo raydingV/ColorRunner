@@ -81,7 +81,7 @@ namespace Controllers
             turret.transform.DOLookAt(target.position, turnSpeed).SetDelay(turnDelay).OnComplete(() =>
             {
                 fireParticle.Play();
-                StackSignals.Instance.onRemoveFromStack?.Invoke(target);
+                // StackSignals.Instance.onRemoveFromStack?.Invoke(target);
             });
         }
 

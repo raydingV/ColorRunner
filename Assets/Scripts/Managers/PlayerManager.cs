@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Threading.Tasks;
 using Controllers;
 using Data.UnityObject;
@@ -11,7 +11,7 @@ using UnityEngine;
 
 namespace Managers
 {
-    public class PlayerManager: MonoBehaviour
+    public class PlayerManager : MonoBehaviour
     {
         #region Self Variables
 
@@ -48,8 +48,8 @@ namespace Managers
         private PlayerData GetPlayerData() => Resources.Load<CD_Player>("Data/CD_Player").Data;
         
         #region Event Subsicription
-    
-        void OnEnable()
+
+        private void OnEnable()
         {
             SubscribeEvents();
         }
@@ -58,10 +58,10 @@ namespace Managers
         {
             CoreGameSignals.Instance.onPlay += OnPlay;
             CoreGameSignals.Instance.onChangeGameState += OnGameStateChange;
+            CoreGameSignals.Instance.onReset += OnReset;
             
             InputSignals.Instance.onInputTaken += OnPointerDown;
             InputSignals.Instance.onInputReleased += OnInputReleased;
-            
             InputSignals.Instance.onInputDragged += OnInputDragged;
             InputSignals.Instance.onJoystickDragged += OnJoystickDragged;
             
@@ -69,14 +69,17 @@ namespace Managers
             PlayerSignals.Instance.onPlayerExitDroneArea += OnPlayerExitDroneArea;
             PlayerSignals.Instance.onPlayerEnterTurretArea += OnPlayerEnterTurretArea;
             PlayerSignals.Instance.onPlayerExitTurretArea += OnPlayerExitTurretArea;
+            PlayerSignals.Instance.onPlayerEnterIdleArea += OnPlayerEnterIdleArea;
+            PlayerSignals.Instance.onPlayerScaleUp += OnPlayerScaleUp; 
+                
             RunnerSignals.Instance.onDroneAnimationComplated += OnDroneAnimationComplated;
-
         }
-        
+
         private void UnsubscribeEvents()
         {
             CoreGameSignals.Instance.onPlay -= OnPlay;
             CoreGameSignals.Instance.onChangeGameState -= OnGameStateChange;
+            CoreGameSignals.Instance.onReset -= OnReset;
             
             InputSignals.Instance.onInputTaken -= OnPointerDown;
             InputSignals.Instance.onInputReleased -= OnInputReleased;
@@ -87,16 +90,20 @@ namespace Managers
             PlayerSignals.Instance.onPlayerExitDroneArea -= OnPlayerExitDroneArea;
             PlayerSignals.Instance.onPlayerEnterTurretArea -= OnPlayerEnterTurretArea;
             PlayerSignals.Instance.onPlayerExitTurretArea -= OnPlayerExitTurretArea;
+            PlayerSignals.Instance.onPlayerEnterIdleArea -= OnPlayerEnterIdleArea;
+            PlayerSignals.Instance.onPlayerScaleUp -= OnPlayerScaleUp; 
+
             RunnerSignals.Instance.onDroneAnimationComplated -= OnDroneAnimationComplated;
         }
-        
+
         private void OnDisable()
         {
             UnsubscribeEvents();
         }
-        #endregion
-        
-        
+
+        #endregion Event Subsicription
+
+
         private void SetPlayerDataToControllers()
         {
             movementController.SetMovementData(_playerData.playerMovementData);
@@ -111,11 +118,12 @@ namespace Managers
         private void OnFailed() => movementController.IsReadyToPlay(false);
         
         private void OnPointerDown()
+
         {
             ActivateMovement();
             // animationController.SetAnimationState(SticmanAnimationType.Run);
         }
-        
+
         private void OnInputReleased()
         {
             DeactivateMovement();
@@ -125,7 +133,6 @@ namespace Managers
         
         private void OnJoystickDragged(IdleInputParams inputParams)  => movementController.UpdateIdleInputValue(inputParams);
    
-
         private void OnGameStateChange(GameStates gameState) => movementController.ChangeGameStates(gameState);
     
         public void StopVerticalMovement() => movementController.StopVerticalMovement();
@@ -134,22 +141,21 @@ namespace Managers
 
         private void ActivateMovement() { movementController.ActivateMovement(); }
 
+
         public void DeactivateMovement() { movementController.DeactivateMovement(); }
-
-
-
-        private void OnPlayerEnterDroneArea()
-        {
-            ChangeForwardSpeed(PlayerSpeedState.EnterDroneArea);
-        }
         
-        private void OnPlayerExitDroneArea()
+        private void OnPlayerEnterDroneArea()
         {
             exitDroneAreaPosition = transform.position;
             StopVerticalMovement();
             ChangeForwardSpeed(PlayerSpeedState.Stop);
         }
         
+        private void OnPlayerExitDroneArea()
+        {
+
+        }
+
         private void OnDroneAnimationComplated()
         {
             StartVerticalMovement(exitDroneAreaPosition);
@@ -167,14 +173,29 @@ namespace Managers
             ChangeForwardSpeed(PlayerSpeedState.Normal);
         }
 
+        private void OnPlayerEnterIdleArea()
+        {
+            print("Player Mesh Enabled");
+            
+            movementController.StopVerticalMovement();
+            movementController.ChangeGameStates(GameStates.Idle);
+            animationController.gameObject.SetActive(true);
+        }
+
+        private void OnPlayerScaleUp()
+        {
+            if(transform.localScale.x >= _playerData.playerMovementData.MaxSizeValue) return;
+            transform.DOScale(transform.localScale + Vector3.one * _playerData.playerMovementData.SizeUpValue, .1f);
+        }
+        
         public void StartVerticalMovement(Vector3 exitPosition) => movementController.OnStartVerticalMovement(exitPosition);
         public void ChangeForwardSpeed(PlayerSpeedState changeSpeedState) => movementController.ChangeVerticalSpeed(changeSpeedState);
         
         private void OnReset()
         {
-            Debug.Log("MovementReset");
             movementController.MovementReset();
-            gameObject.SetActive(true);
+            animationController.gameObject.SetActive(false);
+            transform.DOScale(Vector3.one, .1f);
         }
     }
 }

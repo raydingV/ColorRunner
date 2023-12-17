@@ -22,7 +22,10 @@ namespace Signals
         
         public Action onPlayerEnterTurretArea;
         public Action onPlayerExitTurretArea;
-        
+
+        public Action onPlayerEnterIdleArea;
+
+        public Action onPlayerScaleUp;
         public Action<Material> onChangeMaterial;
         public Action<AnimationStateMachine> onTranslateAnimationState;
         public Action<CameraStateMachine> onTranslateCameraState;

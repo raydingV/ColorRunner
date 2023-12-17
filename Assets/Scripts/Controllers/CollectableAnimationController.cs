@@ -54,18 +54,19 @@ namespace Controllers
         private void Awake()
         {
             _CollectableAnimator = GetComponent<Animator>();
-            _CollectableStateMachine = new IdleAnimationState();
+            if (manager.GetTag() == "Collected")
+            {
+                _CollectableStateMachine = new SneakIdleAnimationState();
+            }
+            else
+            {
+                _CollectableStateMachine = new IdleAnimationState();
+            }
             _CollectableStateMachine.SetContext(ref _CollectableAnimator);
             _CollectableStateMachine.ChangeAnimationState();
         }
 
-        private void Start()
-        {
-            if (manager.GetComponentInChildren<CollectablePhisicController>().CompareTag("Collected"))
-            {
-                TranslateAnimationState(new SneakIdleAnimationState());
-            }
-        }
+       
 
         public void TranslateAnimationState(AnimationStateMachine state)
         {

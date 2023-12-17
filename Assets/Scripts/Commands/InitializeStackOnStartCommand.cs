@@ -2,6 +2,8 @@
 using Signals;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
+using Unity.Mathematics;
 using UnityEngine;
 
 namespace Commands
@@ -25,17 +27,20 @@ namespace Commands
 
         public void OnInitializeStackOnStart(int size)
         {
-            GameObject firstInitialStack = GameObject.Instantiate(stickmanPrefab, _playerPossition);
-            _collectable.Add(firstInitialStack.transform);
-            firstInitialStack.transform.SetParent(_parent);
-            ScoreSignals.Instance.onCurrentLevelScoreUpdate?.Invoke();
+            if (_collectable.Count == 0)
+            {
+                GameObject firstInitialStack = GameObject.Instantiate(stickmanPrefab, _playerPossition);
+                _collectable.Add(firstInitialStack.transform);
+                firstInitialStack.transform.SetParent(_parent);
+                ScoreSignals.Instance.onCurrentLevelScoreUpdate?.Invoke(true);
+            }
 
             for (int i = 0; i < size; i++)
             {
-                GameObject stackInstance = GameObject.Instantiate(stickmanPrefab, _collectable.Last());
+                GameObject stackInstance = GameObject.Instantiate(stickmanPrefab, _collectable.Last().position,quaternion.identity);
                 stackInstance.transform.SetParent(_parent);
                 _collectable.Add(stackInstance.transform);
-                ScoreSignals.Instance.onCurrentLevelScoreUpdate?.Invoke();
+                ScoreSignals.Instance.onCurrentLevelScoreUpdate?.Invoke(true);
             }
 
             StackSignals.Instance.onSetScoreControllerPosition?.Invoke(_collectable[0]);

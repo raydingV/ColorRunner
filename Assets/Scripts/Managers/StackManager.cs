@@ -3,6 +3,8 @@ using DG.Tweening;
 using Enums;
 using Signals;
 using System.Collections.Generic;
+using System.Threading.Tasks;
+using StateMachine;
 using UnityEngine;
 using UnityObject;
 using ValueObject;
@@ -15,7 +17,7 @@ namespace Managers
 
         #region Serialize Variables
 
-        [SerializeField] private List<Transform> _collectable = new List<Transform>();
+        [SerializeField] private List<Transform> _collectableList = new List<Transform>();
         [SerializeField] private List<Transform> _tempList = new List<Transform>();
 
         [SerializeField] private ColorType colorType;
@@ -25,13 +27,14 @@ namespace Managers
 
         #region private Variables
 
+        private LerpData _lerpData;
+        private Transform _playerPosition;
+        
         private AddCollectablesAfterDroneAnimationDoneCommand _addCollectablesAfterDroneAnimationDoneCommand;
         private AddStackCommand _addStackCommand;
         private ChangeAllCollectableColorTypeCommand _changeAllCollectableColor;
         private GetFirstCollectableCommand _getFirstCollectableCommand;
         private InitializeStackOnStartCommand _initializeStackOnStartCommand;
-        private LerpData _lerpData;
-        private Transform _playerPossition;
         private RemoveStackCommand _removeStackCommand;
         private ShakeStackCommand _shakeStakeCommand;
         private StackEnterDroneAreaCommand _stackEnterDroneAreaCommand;
@@ -43,7 +46,7 @@ namespace Managers
         private void Awake()
         {
             Initialize();
-            _initializeStackOnStartCommand.OnInitializeStackOnStart(6);//test pupose that bind next level signal
+            _initializeStackOnStartCommand.OnInitializeStackOnStart(5);//test pupose that bind next level signal
         }
 
         private void FixedUpdate()
@@ -97,33 +100,42 @@ namespace Managers
 
         private void Initialize()
         {
-            _playerPossition = GameObject.FindGameObjectWithTag("Player").transform;
+            _playerPosition = GameObject.FindGameObjectWithTag("Player").transform;
             _lerpData = GetLerpData();
-            _shakeStakeCommand = new ShakeStackCommand(ref _collectable, ref _lerpData);
-            _addStackCommand = new AddStackCommand(ref _collectable, ref _shakeStakeCommand, transform, this);
-            _removeStackCommand = new RemoveStackCommand(ref _collectable);
-            _stackLerpMoveCommand = new StackLerpMoveCommand(ref _collectable, ref _lerpData, _playerPossition);
-            _stackEnterDroneAreaCommand = new StackEnterDroneAreaCommand(ref _collectable, ref _tempList);
-            _addCollectablesAfterDroneAnimationDoneCommand = new AddCollectablesAfterDroneAnimationDoneCommand(ref _collectable, ref _tempList);
+            _shakeStakeCommand = new ShakeStackCommand(ref _collectableList, ref _lerpData);
+            _addStackCommand = new AddStackCommand(ref _collectableList, ref _shakeStakeCommand, transform, this);
+            _removeStackCommand = new RemoveStackCommand(ref _collectableList);
+            _stackLerpMoveCommand = new StackLerpMoveCommand(ref _collectableList, ref _lerpData, _playerPosition);
+            _stackEnterDroneAreaCommand = new StackEnterDroneAreaCommand(ref _collectableList, ref _tempList);
+            _addCollectablesAfterDroneAnimationDoneCommand = new AddCollectablesAfterDroneAnimationDoneCommand(ref _collectableList, ref _tempList);
             _changeAllCollectableColor = new ChangeAllCollectableColorTypeCommand();
-            _initializeStackOnStartCommand = new InitializeStackOnStartCommand(ref _collectable, _playerPossition, transform, stickmanPrefab, colorType);
-            _getFirstCollectableCommand = new GetFirstCollectableCommand(ref _collectable);
+            _initializeStackOnStartCommand = new InitializeStackOnStartCommand(ref _collectableList, _playerPosition, transform, stickmanPrefab, colorType);
+            _getFirstCollectableCommand = new GetFirstCollectableCommand(ref _collectableList);
         }
 
-        private void OnMergeToPLayer()
+        private async void OnMergeToPLayer()
         {
-            _tempList = _collectable;
-            _collectable.Clear();
-            _tempList.TrimExcess();
-            _collectable.TrimExcess();
-
-            foreach (var stack in _tempList)
+            for (int i = 0; i < _collectableList.Count; i++)
             {
-                stack.DOMoveZ(_playerPossition.position.z, 0.4f).OnComplete(() =>
-                    _playerPossition.DOScale(
-                        new Vector3(_playerPossition.localScale.x + 0.0375f, _playerPossition.localScale.y + 0.0375f,
-                            _playerPossition.localScale.z + 0.0375f), 0.3f));
+                Transform collectable = _collectableList[i];
+                
+                PlayerSignals.Instance.onPlayerScaleUp?.Invoke();
+                
+                collectable.DOMoveZ(_playerPosition.position.z, 0.1f).OnComplete(() =>
+                {
+                    collectable.gameObject.SetActive(false);
+                    _tempList.Add(collectable);
+                });
+                await Task.Delay(100);
             }
+            await Task.Delay(100);
+            
+            _collectableList.Clear();
+            _collectableList.TrimExcess();
+            print("Merge to player finished");
+            PlayerSignals.Instance.onTranslateCameraState?.Invoke(new CameraIdleState());
+            UISignals.Instance.onOpenPanel?.Invoke(UIPanels.EndGamePrizePanel);
         }
+        // throw sticman from temporary list
     }
 }

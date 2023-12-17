@@ -6,7 +6,7 @@ namespace Signals
 {
     public class ScoreSignals : MonoSingleton<ScoreSignals>
     {
-        public UnityAction onCurrentLevelScoreUpdate;
+        public UnityAction<bool> onCurrentLevelScoreUpdate;
         public UnityAction<int> onTotalScoreUpdate;
         public Action onHideScore;
         public Action onUpdateScoreAfterDroneArea;

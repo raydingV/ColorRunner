@@ -14,6 +14,8 @@ public class PlayerMovementData
     public Vector2 ClampValues;
     public float RunnerForwardSpeed;
     public float RunnerSidewaySpeed;
+    public float SizeUpValue;
+    public float MaxSizeValue;
     
     [Space][Header("Idle")]
     public float IdleSpeed;

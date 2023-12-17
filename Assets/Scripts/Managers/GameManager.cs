@@ -32,12 +32,18 @@ public class GameManager : MonoBehaviour
     {
         CoreGameSignals.Instance.onChangeGameState += OnChangeGameState;
         CoreGameSignals.Instance.onSaveGameData += OnSaveGame;
+        CoreGameSignals.Instance.onReset += OnReset;
+        
+        PlayerSignals.Instance.onPlayerEnterIdleArea += OnPlayerEnterIdleArea;
     }
 
     private void UnsubscribeEvents()
     {
         CoreGameSignals.Instance.onChangeGameState -= OnChangeGameState;
         CoreGameSignals.Instance.onSaveGameData -= OnSaveGame;
+        CoreGameSignals.Instance.onReset -= OnReset;
+        
+        PlayerSignals.Instance.onPlayerEnterIdleArea -= OnPlayerEnterIdleArea;
     }
 
     private void OnDisable()
@@ -50,6 +56,11 @@ public class GameManager : MonoBehaviour
         States = newState;
     }
 
+    private void OnPlayerEnterIdleArea() => OnChangeGameState(GameStates.Idle);
+
+    
+    
+    
     private void OnSaveGame(SaveGameDataParams saveDataParams)
     {
         if (saveDataParams.Level != null)
@@ -63,4 +74,11 @@ public class GameManager : MonoBehaviour
         if (saveDataParams.Haptic != null) ES3.Save("Haptic", saveDataParams.Haptic);
         */
     }
+
+
+    private void OnReset()
+    {
+        OnChangeGameState(GameStates.Runner);
+    }
+    
 }

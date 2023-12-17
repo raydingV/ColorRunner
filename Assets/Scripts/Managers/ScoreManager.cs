@@ -15,7 +15,10 @@ namespace Managers
         private Transform _target;
         private TextMeshPro _scoreText;
 
-        [SerializeField] private Vector3 followOffset;
+        public float deneme;
+        [SerializeField] private Vector3 followRunnerOffset;
+        [SerializeField] private Vector3 followIdleOffset;
+        private Vector3 followOffset;
         #endregion
 
         private void Awake()
@@ -40,14 +43,14 @@ namespace Managers
         {
             ScoreSignals.Instance.onCurrentLevelScoreUpdate += OnCurrentLevelScoreUpdate;
             ScoreSignals.Instance.onTotalScoreUpdate += OnTotalScoreUpdate;
-            
             ScoreSignals.Instance.currentScore += ReturnCurrentScore;
             ScoreSignals.Instance.totalScore += ReturnTotalScore;
             ScoreSignals.Instance.onHideScore += OnHideScore;
             ScoreSignals.Instance.onUpdateScoreAfterDroneArea += OnUpdateScoreAfterDroneArea;
 
             StackSignals.Instance.onSetScoreControllerPosition += OnSetPosition;
-
+            PlayerSignals.Instance.onPlayerEnterIdleArea += OnPlayerEnterIdleArea;
+            
             CoreGameSignals.Instance.onPlay += OnFindFollowTarget;
             CoreGameSignals.Instance.onReset += OnReset;
         }
@@ -55,14 +58,14 @@ namespace Managers
         {
             ScoreSignals.Instance.onCurrentLevelScoreUpdate -= OnCurrentLevelScoreUpdate;
             ScoreSignals.Instance.onTotalScoreUpdate -= OnTotalScoreUpdate;
-            
             ScoreSignals.Instance.currentScore -= ReturnCurrentScore;
             ScoreSignals.Instance.totalScore -= ReturnTotalScore;
             ScoreSignals.Instance.onHideScore -= OnHideScore;
             ScoreSignals.Instance.onUpdateScoreAfterDroneArea += OnUpdateScoreAfterDroneArea;
 
             StackSignals.Instance.onSetScoreControllerPosition -= OnSetPosition;
-
+            PlayerSignals.Instance.onPlayerEnterIdleArea -= OnPlayerEnterIdleArea;
+            
             CoreGameSignals.Instance.onPlay -= OnFindFollowTarget;
             CoreGameSignals.Instance.onReset -= OnReset;
         }
@@ -72,7 +75,12 @@ namespace Managers
         private void Update()
         {
             if (_target == null) return;
-            transform.position = new Vector3(_target.position.x, _target.position.y + followOffset.y,
+            followOffset = followIdleOffset;
+
+            transform.position = new Vector3(_target.position.x,
+                _target.transform.position.y + followOffset.y 
+                + (_target.transform.localScale.y - 1) * (_target.transform.localScale.y - 1) * deneme,
+                
                 _target.position.z + followOffset.z);
         }
 
@@ -89,9 +97,9 @@ namespace Managers
             }
         }
 
-        private void OnCurrentLevelScoreUpdate()
+        private void OnCurrentLevelScoreUpdate(bool increase)
         {
-            _currentScore++;
+            _currentScore += (increase) ? 1 : -1;
             _scoreText.text = _currentScore.ToString();
             SaveScoreParams();
         }
@@ -108,16 +116,22 @@ namespace Managers
             _target = _transform;
         }
 
+        private void OnPlayerEnterIdleArea()
+        {
+            _target = FindObjectOfType<PlayerManager>().transform;
+            followOffset = followIdleOffset;
+        }
+            
         public void OnUpdateScoreAfterDroneArea()
         {
             int newScore = _currentScore * 2;
-            _scoreText.text = newScore.ToString();
-            /*
-            for (int i = 0; i < _score; i++) !!write on stackmanager and call from here
-            {
-                StackSignals.Instance.onAddStack?.Invoke(player);
-            }*/
             _currentScore = newScore;
+            _scoreText.text = newScore.ToString();
+            
+            // for (int i = 0; i < _score; i++) !!write on stackmanager and call from here
+            // {
+            //     StackSignals.Instance.onAddStack?.Invoke(player);
+            // }
         }
 
         private void OnHideScore()
@@ -130,6 +144,7 @@ namespace Managers
         private void OnReset()
         {
             _currentScore = 0;
+            followOffset = followRunnerOffset;
         }
         
         #region refactred when saveManager is added

@@ -30,7 +30,7 @@ namespace Commands
             _collectable.TrimExcess();
             _monoBehaviour.StartCoroutine(_command.ShakeStackSize());
             StackSignals.Instance.onSetScoreControllerPosition?.Invoke(_collectable[0]);
-            ScoreSignals.Instance.onCurrentLevelScoreUpdate?.Invoke();
+            ScoreSignals.Instance.onCurrentLevelScoreUpdate?.Invoke(true);
         }
     }
 }

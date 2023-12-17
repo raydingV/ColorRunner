@@ -1,9 +1,9 @@
 using System;
 using Enums;
 using Keys;
+using DG.Tweening;
 using Signals;
 using UnityEngine;
-using DG.Tweening;
 
 namespace Controllers
 {
@@ -50,8 +50,6 @@ namespace Controllers
 
         private void FixedUpdate()
         {
-            Debug.Log("_isReadyToPlay="+_isReadyToPlay+ "_isReadyToMove=" + _isReadyToMove);
-            
             if (_isReadyToPlay)
             {
                 if (_isReadyToMove)
@@ -136,7 +134,7 @@ namespace Controllers
             Vector3 setXPosition = new Vector3(exitPosition.x, transform.position.y, transform.position.z);
             transform.position = setXPosition;
             
-            transform.DOMoveZ(8, .5f).SetRelative(true).SetEase(Ease.OutSine)
+            transform.DOMoveZ(20, .5f).SetRelative(true).SetEase(Ease.OutSine)
                 .OnComplete(() => { ChangeVerticalSpeed(PlayerSpeedState.Normal);});
         }
 

@@ -12,24 +12,24 @@ namespace Controllers
     {
         #region SelfVariables
 
+        #region Public Variables
+
+        public ColorType currentColorType;
+
+        #endregion
+        
+        #region Serialize Variavles
+
+
+        #endregion
+        
         #region Private Variavles
 
         private Material _material;
         public ColorData _colorData;
 
         #endregion
-
-        #region Serialize Variavles
-
-
-        #endregion
-
-        #region Public Variables
-
-        public ColorType currentColorType;
-
-        #endregion
-
+        
         #endregion
 
         private void Awake()

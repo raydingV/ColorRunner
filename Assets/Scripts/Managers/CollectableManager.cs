@@ -1,4 +1,5 @@
-﻿using Controllers;
+﻿using System.Runtime.InteropServices.WindowsRuntime;
+using Controllers;
 using Enums;
 using Signals;
 using StateMachine;
@@ -10,6 +11,13 @@ namespace Managers
     {
         #region SelfVariables
 
+        #region public Variable
+
+        public ColorType currentColorType;
+        public bool IsTouchTheGate;
+        
+        #endregion public Variable
+        
         #region Serialize Variables
 
         [SerializeField] private CollectableAnimationController animatorController;
@@ -23,13 +31,7 @@ namespace Managers
         [SerializeField] private bool _isDead;
 
         #endregion Private Variables
-
-        #region public Variable
-
-        public ColorType currentColorType;
-
-        #endregion public Variable
-
+        
         #endregion SelfVariables
 
         #region Subscriptions
@@ -107,6 +109,7 @@ namespace Managers
         public void RemoveCollectableFromStackManager(Transform transform)
         {
             StackSignals.Instance.onRemoveFromStack?.Invoke(transform);
+            ScoreSignals.Instance.onCurrentLevelScoreUpdate?.Invoke(false);
         }
 
         public void RotateMeshForward()
@@ -142,6 +145,12 @@ namespace Managers
             {
                 meshController.SetCollectableMatarial(material);
             }
+        }
+
+        public void EnterRainbowGate()
+        {
+            IsTouchTheGate = true;
+            meshController.SetRainbowMaterial();
         }
     }
 }
